@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {ROOT} from './helpers.js';
 import {COUNT_SCALE, DENSITY_SCALE, LADDER, classColors, buildCountClasses, buildDensityClasses, geometricBreaks, classify, inkFor, contrastRatio} from '../js/scales.js';
+import {dens} from '../js/panel.js';
 
 test('the two families are exact 41-sample LUTs with anchors at 0/20/40, same HEX on both themes', () => {
   for (const s of [COUNT_SCALE, DENSITY_SCALE]) {
@@ -42,7 +43,12 @@ test('density classes: [lower, upper) with the last closed at the observed maxim
   const m = buildDensityClasses([0, 0.004, 0.3, 2.6, 41.2]);
   assert.equal(m.classCount, 5);
   assert.equal(m.method, 'geometric-1-2-5');
-  assert.deepEqual(m.classes.map(c => c.label), ['>0–0.1', '0.1–0.5', '0.5–2', '2–10', '10–41']);
+  assert.deepEqual(m.classes.map(c => c.label), ['>0–0.1', '0.1–0.5', '0.5–2', '2–10', '10–41.2']);
+  // The closed top prints the maximum exactly as the densest area's label and panel print it (never “41” beside “41.2”).
+  for (const max of [41.2, 41.25, 16.7, 11.04, 0.734, 0.0456]) {
+    const top = buildDensityClasses([0.001, max]).classes.at(-1).label.split('–').at(-1);
+    assert.equal(top, dens(max), `top of (0, ${max}]`);
+  }
   assert.deepEqual(m.classes.map(c => c.fill), classColors(5, DENSITY_SCALE));
   assert.equal(m.classes.at(-1).closed, true);
   assert.equal(classify(41.2, m).classIndex, 4, 'the maximum is inside the closed last class');

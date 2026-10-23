@@ -11,6 +11,11 @@
  * Every loaded frame stays a click target at every zoom (`area-hit`, a transparent fill without maxzoom):
  * from a selected แขวง/ตำบล a click on the next one moves there. Hover draws a thin outline.
  *
+ * Province view (live walk 2026-10-23: a big จังหวัด held at zoom 8 lost half its frame off screen): with a
+ * จังหวัด filter, that province's frames carry feature-state `province` and are drawn from
+ * PROVINCE_VIEW_MIN_ZOOM, so the whole province fits with its choropleth; every other frame still starts at
+ * AREA_MIN_ZOOM (below it the province frames of js/provinces.js carry the reading).
+ *
  * EVID-05 per frame: measured (class fill) · measured_zero (the national register lists no premises there
  * in this selection → lowest fill + zero outline, labelled “0 ในทะเบียน”) · no_data is not used by the
  * licence register, which covers the whole country (kept for the treatment contract) · out_of_scope does
@@ -21,6 +26,8 @@ import {buildDensityClasses, classify} from './scales.js';
 
 export const FILL_MAX_ZOOM = 14.5;
 export const AREA_MIN_ZOOM = 8;
+/** Lowest zoom at which the frames of the selected จังหวัด are drawn (the country fit never goes below 4). */
+export const PROVINCE_VIEW_MIN_ZOOM = 4;
 const SOURCE = 'areas', DISTRICTS = 'districts', HATCH = 'nodata-hatch';
 export const AREA_LAYERS = Object.freeze({hit: 'area-hit', fill: 'area-fill', hatch: 'area-nodata', zero: 'area-zero-outline', outline: 'area-outline', hover: 'area-hover', selected: 'area-selected'});
 export const DISTRICT_LAYERS = Object.freeze({outline: 'district-outline', selected: 'district-selected'});
@@ -80,23 +87,26 @@ export function installAreaLayers(map, {areas, districts}) {
     attribution: 'ขอบเขตปกครอง: <a href="https://landometer.com/v3/citymeter" target="_blank" rel="noopener">CityMETER</a>'});
   map.addSource(DISTRICTS, {type: 'geojson', data: districts, promoteId: 'id'});
   const fs = (key, on, off = 0) => ['case', ['boolean', ['feature-state', key], false], on, off];
-  // Click target only (never drawn): every frame at every zoom from AREA_MIN_ZOOM.
-  map.addLayer({id: AREA_LAYERS.hit, type: 'fill', source: SOURCE, minzoom: AREA_MIN_ZOOM,
+  // Below AREA_MIN_ZOOM only the frames of the selected จังหวัด (feature-state `province`) are drawn.
+  const gate = expr => ['step', ['zoom'], fs('province', expr), AREA_MIN_ZOOM, expr];
+  // Click target only (never drawn): every loaded frame from PROVINCE_VIEW_MIN_ZOOM; below AREA_MIN_ZOOM the
+  // app accepts a hit only inside the selected จังหวัด (js/app.js#onMapClick).
+  map.addLayer({id: AREA_LAYERS.hit, type: 'fill', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM,
     paint: {'fill-color': '#000000', 'fill-opacity': 0}}, beforeId);
-  map.addLayer({id: AREA_LAYERS.fill, type: 'fill', source: SOURCE, minzoom: AREA_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
-    paint: {'fill-color': ['coalesce', ['feature-state', 'fill'], '#000000'], 'fill-opacity': fs('filled', 1), 'fill-antialias': true}}, beforeId);
-  map.addLayer({id: AREA_LAYERS.hatch, type: 'fill', source: SOURCE, minzoom: AREA_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
-    paint: {'fill-pattern': HATCH, 'fill-opacity': fs('nodata', 1)}}, beforeId);
-  map.addLayer({id: AREA_LAYERS.zero, type: 'line', source: SOURCE, minzoom: AREA_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
-    paint: {'line-color': cssVar('--data-zero-outline', '#7D877F'), 'line-width': 2, 'line-opacity': fs('zero', 1)}}, beforeId);
+  map.addLayer({id: AREA_LAYERS.fill, type: 'fill', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
+    paint: {'fill-color': ['coalesce', ['feature-state', 'fill'], '#000000'], 'fill-opacity': gate(fs('filled', 1)), 'fill-antialias': true}}, beforeId);
+  map.addLayer({id: AREA_LAYERS.hatch, type: 'fill', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
+    paint: {'fill-pattern': HATCH, 'fill-opacity': gate(fs('nodata', 1))}}, beforeId);
+  map.addLayer({id: AREA_LAYERS.zero, type: 'line', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM, maxzoom: FILL_MAX_ZOOM,
+    paint: {'line-color': cssVar('--data-zero-outline', '#7D877F'), 'line-width': 2, 'line-opacity': gate(fs('zero', 1))}}, beforeId);
   map.addLayer({id: DISTRICT_LAYERS.outline, type: 'line', source: DISTRICTS, minzoom: 9.5,
     paint: {'line-color': cssVar('--border-emphasis', '#7D877F'), 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.8, 14, 1.4],
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.5, 15, 0.7, 17, 0.35]}});
-  map.addLayer({id: AREA_LAYERS.outline, type: 'line', source: SOURCE, minzoom: AREA_MIN_ZOOM,
+  map.addLayer({id: AREA_LAYERS.outline, type: 'line', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM,
     paint: {'line-color': ['case', ['boolean', ['feature-state', 'quiet'], false], cssVar('--border-default', '#C9D0CB'), cssVar('--border-emphasis', '#7D877F')],
       'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 14, 1, 17, 1.4], 'line-dasharray': [3, 2],
-      'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.4, 11, 0.85]}});
-  map.addLayer({id: AREA_LAYERS.hover, type: 'line', source: SOURCE, minzoom: AREA_MIN_ZOOM,
+      'line-opacity': ['interpolate', ['linear'], ['zoom'], PROVINCE_VIEW_MIN_ZOOM, fs('province', 0.25), AREA_MIN_ZOOM - 0.01, fs('province', 0.4), AREA_MIN_ZOOM, 0.4, 11, 0.85]}});
+  map.addLayer({id: AREA_LAYERS.hover, type: 'line', source: SOURCE, minzoom: PROVINCE_VIEW_MIN_ZOOM,
     paint: {'line-color': cssVar('--map-selected-stroke', '#176B82'), 'line-width': 2, 'line-opacity': fs('hover', 0.7)}});
   map.addLayer({id: DISTRICT_LAYERS.selected, type: 'line', source: DISTRICTS,
     paint: {'line-color': cssVar('--map-selected-stroke', '#176B82'), 'line-width': 2.4, 'line-opacity': fs('selected', 1)}});
@@ -122,9 +132,10 @@ export function installAreaLayers(map, {areas, districts}) {
    * area focus only those frames keep their fill; the rest stay outline-only.
    * outlineFocus: draw the selection stroke around the focused frames (the top-three
    * focus) — off for a district, whose own outline already marks the selection.
+   * provinceCode: the จังหวัด filter — its frames (the model then holds only them) are drawn at every zoom.
    */
   function update(args = {}) {
-    const {model, selectedId = '', focusIds = [], outlineFocus = true, districtId = '', visible = true} = args;
+    const {model, selectedId = '', focusIds = [], outlineFocus = true, districtId = '', visible = true, provinceCode = ''} = args;
     if (!model) return current;
     lastArgs = args;
     current = model;
@@ -139,6 +150,7 @@ export function installAreaLayers(map, {areas, districts}) {
         fill: a?.fill || null, filled: filled && (a.state === 'measured' || a.state === 'measured_zero'),
         zero: filled && a.state === 'measured_zero', nodata: filled && a.state === 'no_data',
         quiet: focusMode && !focused, selected: id === selectedId || (!selectedId && outlineFocus && focusIds.includes(id)),
+        province: Boolean(provinceCode) && a?.province === provinceCode,
       });
     }
     if (lastDistrict !== districtId) {
@@ -155,7 +167,7 @@ export function installAreaLayers(map, {areas, districts}) {
     if (map.getLayer(AREA_LAYERS.zero)) map.setPaintProperty(AREA_LAYERS.zero, 'line-color', cssVar('--data-zero-outline', '#7D877F'));
   }
 
-  /** The frame under a screen point (any zoom ≥ AREA_MIN_ZOOM), as its id, or ''. */
+  /** The loaded frame under a screen point (any zoom ≥ PROVINCE_VIEW_MIN_ZOOM), as its id, or ''. */
   function hitTest(point) {
     if (!map.getLayer(AREA_LAYERS.hit) || map.getLayoutProperty?.(AREA_LAYERS.hit, 'visibility') === 'none') return '';
     const f = map.queryRenderedFeatures([point.x, point.y], {layers: [AREA_LAYERS.hit]})[0];

@@ -3,7 +3,7 @@
   "schemaVersion": "1.5.0",
   "documentType": "product-brief",
   "productId": "citymeter-pharmacy",
-  "productVersion": "0.1.0",
+  "productVersion": "0.1.1",
   "updatedOn": "2026-10-23",
   "datasetCheckedOn": "2026-10-22",
   "registerAsOf": "2026-05-28",
@@ -47,6 +47,10 @@
   ],
   "changesSince": {
     "base": "CityMETER Restaurants 0.2.1 (same camera, basemap, massing, pictogram, breadcrumb and handoff contracts) and Luxury Brands 0.5",
+    "releases": {
+      "0.1.0": "first publication (d017202)",
+      "0.1.1": "live walk 2026-10-23 in the owner’s Chrome with real tiles: rounded focus massing in the first view (from zoom 12 when the focus tiles are complete; 16-tile bound nearest the camera), province view (a จังหวัด fits whole with its แขวง/ตำบล at every zoom; no count fill under it), closed top class printed like a density value, phone toolbar in one row (วิธีใช้ and Product statement in the sheet), number + unit never split, map status names the context figure as every point outside the focus"
+    },
     "new": [
       "national scale: area index without geometry + per-province frames on demand",
       "counting unit contract (licensed rows by default, every row optional, words follow the unit)",
@@ -234,7 +238,7 @@
     },
     "unplaced": "rows matched only to a district (74 licensed) or province (9 licensed) are counted there and never painted into a subdistrict; district and area panels say how many",
     "points": "a row without a published point has no pin and still counts in its area; panels show “มีพิกัดจากแหล่ง x/y”",
-    "legend": "density classes + 0 (when present); province count classes at country zoom"
+    "legend": "density classes + 0 (when present); province count classes below zoom 8 without a จังหวัด filter; the closed top bound prints like a density value (never below the densest label)"
   },
   "categoricalCueContract": {
     "registry": "landometer-series-10-v8 (soft fill + ink per theme from assets/theme.css)",
@@ -296,7 +300,7 @@
     "principle": "Show detail only for the focused part; keep everything else quiet (carried over from Luxury Brands, owner 2026-10-22)",
     "states": {
       "overviewAuto": {
-        "focus": "top areas of the leading province: density fill, ink label chips with value and class swatch, cue symbols (rows with a point), rounded focus massing (zoom ≥ 13)",
+        "focus": "top areas of the leading province: density fill, ink label chips with value and class swatch, cue symbols (rows with a point), rounded focus massing (3D from zoom 12 when the focus tiles are complete, else 13)",
         "quiet": "other frames outline-only, light label chips from zoom 11 (≤ 12 desktop, none on a phone); rows outside the focus are grey context dots; city massing quiet"
       },
       "overviewAll": {
@@ -320,17 +324,21 @@
         "quiet": "everything else; the camera stays where the user clicked"
       },
       "country": {
-        "focus": "province frames filled by count below zoom 8, ink chips with counts; a จังหวัด filter keeps its frame filled and quiets the others; ทั้งประเทศ clears the จังหวัด filter and the focus (?areas=all)",
+        "focus": "without a จังหวัด filter: province frames filled by count below zoom 8, ink chips with counts; ทั้งประเทศ clears the จังหวัด filter and the focus (?areas=all)",
         "quiet": "subdistrict layers hidden below zoom 8"
+      },
+      "provinceView": {
+        "focus": "with a จังหวัด filter (0.1.1): the province is fitted whole and its แขวง/ตำบล are drawn at every zoom from 4 (feature-state province on the area layers); its focus/selected labels show from that zoom; the legend is the density classes; a click inside it opens the แขวง/ตำบล at any zoom",
+        "quiet": "no province is count-filled; other provinces are outlines with quiet chips and stay clickable below zoom 8 (another จังหวัด)"
       },
       "autoReleased": {
         "focus": "national-scale adaptation: while no area of the AUTOMATIC focus is on screen, every loaded frame is filled (js/app.js#mapFocusIds, re-checked after each camera move); the panel keeps the Aha; explicit focus, a selected area or a district never release",
         "quiet": "none"
       }
     },
-    "choropleth": "density.area classes, opacity 1 beneath the basemap’s first line layer, zoom 8–14.5 (hard switch off at 14.5), EVID-05 states per coverageContract",
+    "choropleth": "density.area classes, opacity 1 beneath the basemap’s first line layer, zoom 8–14.5 (the selected จังหวัด from zoom 4), hard switch off at 14.5, EVID-05 states per coverageContract",
     "symbols": "symbol layer of cue icons for focus rows with a point above a grey circle layer of the whole scope’s points (context: not focusable, not clickable, sent only when the filters change)",
-    "labels": "HTML chips collision-managed against each other and the map chrome; area chips from zoom 8 (focus) / 11 (quiet), province chips below zoom 9"
+    "labels": "HTML chips collision-managed against each other and the map chrome; area chips from zoom 8 (focus; from 4 in the province view) / 11 (quiet), province chips below zoom 9"
   },
   "buildingJoinContract": {
     "buildings": "focus-tier OSM footprints kept by js/massing.js before rounding/offset (stable ids focusFeatureId(tile, polygon ordinal in the tile))",
@@ -353,7 +361,7 @@
     "clickOrder": [
       "focus pin",
       "focus building (buildingJoinContract.click)",
-      "province frame (zoom < 8)",
+      "below zoom 8: a แขวง/ตำบล of the selected จังหวัด (province view), else a province frame of another จังหวัด",
       "แขวง/ตำบล via area-hit at every zoom ≥ 8"
     ],
     "sameArea": "a click inside the selected area changes nothing (pan and tilt freely)",
@@ -434,14 +442,14 @@
       "filter": "['all', ['!=', ['get','hide_3d'], true]] (no host twins to hide in this product)"
     },
     "focusTier": {
-      "source": "focus-massing (GeoJSON built from the same tile URLs MapLibre loads, decoded by js/mvt.js; z14, ≤ 9 tiles per update, tiles touching the focus regions only)",
-      "layer": "focus-massing-3d (fill-extrusion, minzoom 13)",
+      "source": "focus-massing (GeoJSON built from the same tile URLs MapLibre loads, decoded by js/mvt.js; z14, ≤ 16 tiles per update (MAX_TILES), tiles touching the focus regions; over the bound the tiles nearest the camera centre, planned again after each move)",
+      "layer": "focus-massing-3d (fill-extrusion): from zoom 12 (FOCUS_MIN_ZOOM) in 3D when every tile of the focus is loaded — the national first Aha frames three แขวง at z12.6 and needs 11 tiles — else from zoom 13 (CITY_MIN_ZOOM, also in plan view); the city tier needs 13 (no buildings in lower basemap tiles)",
       "selection": "buildings overlapping a focus polygon (the selected area, the auto/explicit focus, or the open store’s area plus a 250 m square around its point), clipped to the tile box with buffer",
       "shape": "js/geometry.js: cleanRing → clipRingToBox → offsetRing(+d) → roundRing(r, 3 segments, encloseOffset d)",
       "height": "render_height + 0.35 m (HEIGHT_LIFT_M); base = render_min_height",
       "colour": "--basemap-massing-focus, vertical gradient",
       "visibility": "3D and plan (plan shows the rounded footprints flat)",
-      "cacheKey": "regions + hosts + zoom bucket (full zoom level) + tile availability"
+      "cacheKey": "regions + hosts + zoom bucket (full zoom level) + 3D on/off + the planned tile list + tile availability"
     },
     "hostTier": "not used — no host buildings were collected; the open building (or the building of the open store) moves to the massing venue tier (focus-massing-venue) in map.activeLayer",
     "rounding": {
@@ -497,7 +505,7 @@
       "padding": "desktop 3D padding ignores the legend; mobile portrait with the sheet open uses plan, then re-frames in 3D on sheet close",
       "bearing": "28° so the Siam → Chit Lom → Phrom Phong axis runs left-to-right on wide screens",
       "แขวง/ตำบล": "fitRecord: fitPitched over the outline vertices when the province frame is loaded, else the index bbox corners (works before the outline arrives), maxZoom 17.5",
-      "province": "plan fit of the province bbox held at ≥ AREA_MIN_ZOOM + 0.05 so its choropleth (not the province count) shows",
+      "province": "plan fit of the whole province bbox, no zoom floor (0.1.1): the selected province draws its แขวง/ตำบล at every zoom from 4 (mapFocusContract.states.provinceView); 0.1.0 held the fit at zoom 8.05 and cut 25 of 77 provinces at 1440×813 (Chiang Mai fits at 6.8)",
       "country": "ทั้งประเทศ: plan fit of the union of the 77 province boxes, maxZoom 7"
     },
     "maplibre": {
@@ -530,7 +538,7 @@
     "rows": "filterRows(data.rows, {...filters, province: \"\"}) so each frame keeps its own count",
     "metric": "rows per province (count family, geometric integer classes); measured_zero = lowest fill + zero outline",
     "zoomWindows": {
-      "fill": "< 8",
+      "fill": "< 8 without a จังหวัด filter (with one, no frame is count-filled: the province view shows its แขวง/ตำบล)",
       "outline": "< 12",
       "selected": "< 13",
       "labels": "< 9"
@@ -756,7 +764,7 @@
     },
     {
       "id": "INV22",
-      "rule": "Map clicks follow interactionContract.clickOrder; another แขวง/ตำบล is clickable from zoom 8; a click inside the selected area changes nothing; quiet context dots are never targets"
+      "rule": "Map clicks follow interactionContract.clickOrder; another แขวง/ตำบล is clickable from zoom 8 (inside the selected จังหวัด at any zoom); a click inside the selected area changes nothing; quiet context dots are never targets"
     },
     {
       "id": "INV23",
@@ -809,6 +817,6 @@
     "site": "GitHub Pages from main /root",
     "handoff": "dist/CityMETER-Pharmacy-Developer-Handoff.zip (START_HERE.md, RELEASE_RECEIPT.json, evidence/, source/)",
     "liveCheck": "npm run verify:live",
-    "cacheTag": "?v=20261023-r1 on every entry file and, through the import map in index.html, on every ES module; the frame files take the same tag from import.meta.url; bump it with package.json version (tests/release.test.js)"
+    "cacheTag": "?v=20261023-r2 on every entry file and, through the import map in index.html, on every ES module; the frame files take the same tag from import.meta.url; bump it with package.json version (tests/release.test.js)"
   }
 }

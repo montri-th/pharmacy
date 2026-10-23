@@ -1,6 +1,6 @@
 {
   "name": "citymeter-pharmacy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "CityMETER · Pharmacy — subdistrict-first 3D map of licensed pharmacy density, store types, chains and the Pharmacy Council quality list across Thailand",

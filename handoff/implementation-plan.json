@@ -3,7 +3,7 @@
   "schemaVersion": "1.5.0",
   "documentType": "implementation-plan",
   "productId": "citymeter-pharmacy",
-  "productVersion": "0.1.0",
+  "productVersion": "0.1.1",
   "updatedOn": "2026-10-23",
   "brief": "product-brief.json",
   "statement": "product-statement.json",
@@ -72,11 +72,11 @@
       },
       {
         "path": "js/map-layers.js",
-        "role": "แขวง/ตำบล choropleth on the merged frames (setFrames re-applies feature-state), area-hit and hover, hatch image, district outlines, buildAreaModel, HTML label chips with collision"
+        "role": "แขวง/ตำบล choropleth on the merged frames (setFrames re-applies feature-state), province view (the selected จังหวัด from zoom 4), area-hit and hover, hatch image, district outlines, buildAreaModel, HTML label chips with collision"
       },
       {
         "path": "js/provinces.js",
-        "role": "province frames (count) below zoom 8, outlines, selection; buildProvinceModel"
+        "role": "province frames (count) below zoom 8 without a จังหวัด filter, outlines, selection; buildProvinceModel"
       },
       {
         "path": "js/pins.js",
@@ -88,7 +88,7 @@
       },
       {
         "path": "js/massing.js · js/geometry.js · js/mvt.js",
-        "role": "quiet city massing + rounded focus massing from OpenFreeMap tiles; stable focus ids, original footprints for the join, venue tier for the open building, hitTest (carried over unchanged)"
+        "role": "quiet city massing + rounded focus massing from OpenFreeMap tiles; stable focus ids, original footprints for the join, venue tier for the open building, hitTest; 0.1.1: ≤ 16 tiles nearest the camera, focus tier from zoom 12 in 3D when complete"
       },
       {
         "path": "js/map-style.js · js/camera.js · js/vendors.js",
@@ -112,7 +112,7 @@
       },
       {
         "path": "js/navigation.js · js/launch.js",
-        "role": "nav-7 glyphs and help dialog; launch/slow/error overlay and file:// bridge"
+        "role": "nav-7 glyphs and help dialog (toolbar opener; sheet opener on phones); launch/slow/error overlay and file:// bridge"
       },
       {
         "path": "scripts/build-boundaries.py",
@@ -365,7 +365,31 @@
         "scripts/verify-live.mjs",
         "handoff/VERIFICATION.md"
       ],
-      "status": "done"
+      "status": "in_progress"
+    },
+    {
+      "id": "P11",
+      "title": "Live walk fixes (0.1.1): focus massing in the first view, province view, top class label, phone toolbar, unit wrapping, map status wording",
+      "dependsOn": [
+        "P10"
+      ],
+      "acceptanceCriteria": [
+        "AC03",
+        "AC12",
+        "AC20"
+      ],
+      "files": [
+        "js/massing.js",
+        "js/map-layers.js",
+        "js/provinces.js",
+        "js/app.js",
+        "js/scales.js",
+        "js/panel.js",
+        "js/navigation.js",
+        "index.html",
+        "styles.css"
+      ],
+      "status": "in_progress"
     }
   ],
   "acceptanceCriteria": [
@@ -386,8 +410,8 @@
     {
       "id": "AC03",
       "scenario": "First paint in 3D",
-      "expected": "city preset (pitch 56) framing the three focused แขวง; fills, ink labels and cue symbols only there; the rest quiet",
-      "verificationType": "browser",
+      "expected": "city preset (pitch 56) framing the three focused แขวง at about zoom 12.6; fills, ink labels, cue symbols and rounded focus massing only there; the rest quiet",
+      "verificationType": "browser (live tiles)",
       "result": "see VERIFICATION.md"
     },
     {
@@ -448,8 +472,8 @@
     },
     {
       "id": "AC12",
-      "scenario": "Country view",
-      "expected": "ทั้งประเทศ shows 77 province frames filled by count with chips; clicking one drills into the จังหวัด filter; legend switches with zoom",
+      "scenario": "Country view and province view",
+      "expected": "ทั้งประเทศ shows 77 province frames filled by count with chips; clicking one drills into the จังหวัด filter: the whole province fits with its แขวง/ตำบล choropleth at that zoom, a click inside opens a แขวง/ตำบล, a click on another province moves the filter; the legend follows",
       "verificationType": "browser",
       "result": "see VERIFICATION.md"
     },
@@ -505,7 +529,7 @@
     {
       "id": "AC20",
       "scenario": "Mobile portrait 390 px",
-      "expected": "map first with the compact Aha card; bottom sheet ≤ 64dvh with sticky close; Thai readable; no horizontal scroll",
+      "expected": "map first with the compact Aha card; the toolbar fits one row (วิธีใช้ and Product statement at the top of the sheet); bottom sheet ≤ 64dvh with sticky close; Thai readable, a number never split from its unit; no horizontal scroll",
       "verificationType": "browser",
       "result": "see VERIFICATION.md"
     },

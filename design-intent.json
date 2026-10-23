@@ -1,6 +1,6 @@
 {
   "artifact": "CityMETER Pharmacy — 3D-first, subdistrict-first density map of licensed pharmacies across Thailand",
-  "productVersion": "0.1.0",
+  "productVersion": "0.1.1",
   "updatedOn": "2026-10-23",
   "ldsVersion": "0.9.7",
   "release": "v0.9.7-owner.1",
@@ -28,7 +28,7 @@
   "firstAha": "combined licensed pharmacies per km² of up to three densest แขวง/ตำบล (≥ 30 rows) of the leading province, against that province (its rows ÷ its km²), plus the densest eligible area outside it; computed per selection; the map opens in the 3D city preset with those areas focused automatically and the rest quiet",
   "countingUnit": "default: licensed rows (one ขย1 licence = one premises, unique numbers); optional every row (“รายการ”, may repeat a storefront) — the words follow the unit everywhere",
   "focusAndQuiet": {
-    "implementation": "app.js focus modes (auto/explicit/none) and row scopes (scopeRows/baseRows/rows); map-layers.js filled/quiet feature-state; pins.js cue symbols vs grey context dots; massing.js quiet city tier vs rounded focus tier; camera.js presets; provinces.js frames below zoom 8"
+    "implementation": "app.js focus modes (auto/explicit/none) and row scopes (scopeRows/baseRows/rows); map-layers.js filled/quiet/province feature-state; pins.js cue symbols vs grey context dots; massing.js quiet city tier vs rounded focus tier; camera.js presets; provinces.js frames below zoom 8 without a จังหวัด filter"
   },
   "geometryAndMetricContract": "one row per symbol, only rows with a published source point; membership = production codes matched from the row's own administrative names (row.admin); density = rows ÷ production km²; combined density Σ/Σ; outlines per province on demand",
   "accessibility": [
@@ -43,8 +43,9 @@
     "Thai labels for the map's own controls (MapLibre locale)"
   ],
   "validation": {
-    "status": "release 0.1.0 verification recorded in handoff/VERIFICATION.md",
-    "renderedHarness": "Playwright + MapLibre 5.6.2 from the npm package, OpenFreeMap blocked in the build container (no basemap or massing there); 1440×900 and 390×844, light and dark; the live site was walked in Chrome with the real basemap",
+    "status": "release verification recorded in handoff/VERIFICATION.md (0.1.0 published, walked live, fixed in 0.1.1)",
+    "renderedHarness": "Playwright + MapLibre 5.6.2 from the npm package, OpenFreeMap blocked in the build container (no basemap or massing there); 1440×900 and 390×844, light and dark",
+    "liveWalk": "the owner's Chrome on https://montri-th.github.io/pharmacy/ with the real basemap and massing (desktop 1440×813 both themes; 390×844 through a same-origin frame) — findings and results in handoff/VERIFICATION.md",
     "scope": "Applied LDS values, fonts and actual rendered interfaces. No blanket LDS, CVD, native-device or market-completeness claim."
   },
   "layoutContract": {
@@ -52,16 +53,16 @@
     "readingPanelWidth": "min(max(300px, 28%), 440px)",
     "map": "full remaining viewport below header",
     "chartTray": "collapsible bottom overlay, 52 px collapsed, 360 px / ≤58% open",
-    "mobilePortrait": "full map, bottom sheet ≤ 64dvh with sticky close, compact Aha card on the map while the sheet is closed, only focus labels on the map"
+    "mobilePortrait": "full map, five toolbar buttons in one row (วิธีใช้ and Product statement at the top of the sheet), bottom sheet ≤ 64dvh with sticky close, compact Aha card on the map while the sheet is closed, only focus labels on the map"
   },
   "mapContract": {
     "basemap": "generated at runtime by js/map-style.js on https://tiles.openfreemap.org/planet with --basemap-* tokens; no hosted style URL",
-    "choropleth": "density.area, five geometric 1–2–5 classes over (0, observed max], [lower, upper) with the last closed; opacity 1 beneath the basemap's first line layer; zoom 8–14.5; EVID-05 measured / measured_zero (lowest class + 2 px zero outline); no_data treatment kept but unused (the register covers the country)",
-    "provinces": "count family per province frame below zoom 8, outlines to zoom 12, ink-chip labels to zoom 9, panel list; drill-down into the จังหวัด filter",
+    "choropleth": "density.area, five geometric 1–2–5 classes over (0, observed max], [lower, upper) with the last closed (its top printed like a density value); opacity 1 beneath the basemap's first line layer; zoom 8–14.5, the selected จังหวัด from zoom 4 (province view); EVID-05 measured / measured_zero (lowest class + 2 px zero outline); no_data treatment kept but unused (the register covers the country)",
+    "provinces": "count family per province frame below zoom 8 without a จังหวัด filter, outlines to zoom 12, ink-chip labels to zoom 9, panel list; drill-down into the จังหวัด filter, which fits the whole province and draws its แขวง/ตำบล at every zoom (no count fill under it)",
     "frames": "data/area-index.json (every area, no geometry) + data/frames/{CODE}.json per province, loaded for the selection and for ≤ 6 provinces under the map at subdistrict zoom",
     "symbols": "focus rows with a published point as cue icons (series fill + shape, marker-stroke outline) in a symbol layer, never clustered; context rows as grey circles; HTML pins from zoom 15.5 (≤ 320 pins); no logos",
-    "buildings": "published points × focus-tier OSM footprints (display-time join); the open building, or the building of the open store, in map.activeLayer",
-    "labels": "ink chips for the focus/selection from zoom 8, light chips for the rest from zoom 11 (≤ 12 desktop, none on a phone in focus mode); swatch = the area's class colour; value = ร้าน/ตร.กม.",
+    "buildings": "published points × focus-tier OSM footprints (display-time join); the open building, or the building of the open store, in map.activeLayer; rounded focus massing from zoom 12 in 3D when every focus tile (≤ 16, nearest the camera) is loaded, else from 13",
+    "labels": "ink chips for the focus/selection from zoom 8 (from 4 in the province view), light chips for the rest from zoom 11 (≤ 12 desktop, none on a phone in focus mode); swatch = the area's class colour; value = ร้าน/ตร.กม.",
     "breadcrumb": "ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล with production codes and /D/ /S/ deep links (no dataset parameter); store is the heading"
   },
   "chartContract": {

@@ -5,7 +5,8 @@
  * Below PROVINCE_FILL_MAX_ZOOM every frame is filled with the LDS `count` family (rows per province — a
  * total, not a density: the country view answers “how many”, the subdistrict choropleth answers “how
  * dense”). From there up only the outline remains until PROVINCE_OUTLINE_MAX_ZOOM, where the แขวง/ตำบล
- * carry the reading. With a จังหวัด filter the other frames go quiet (outline only).
+ * carry the reading. With a จังหวัด filter no frame is filled: the selected one shows its own แขวง/ตำบล at
+ * every zoom (js/map-layers.js, province view) under its selection stroke, the others go quiet (outline).
  *
  * Boundaries: data/provinces.geojson, dissolved from CityMETER production subdistrict boundaries.
  * EVID-05: measured · measured_zero (0 rows in this selection, e.g. a chain that is not there).
@@ -63,7 +64,8 @@ export function installProvinceLayers(map, geojson) {
     for (const id of ids) {
       const p = byId.get(id);
       p.selected = id === selectedCode; p.quiet = Boolean(selectedCode) && !p.selected;
-      map.setFeatureState({source: SOURCE, id}, {fill: p.fill, filled: !p.quiet, zero: !p.quiet && p.state === 'measured_zero', quiet: p.quiet, selected: p.selected});
+      const filled = !selectedCode; // a จังหวัด filter: its แขวง/ตำบล carry the reading (no count fill under them)
+      map.setFeatureState({source: SOURCE, id}, {fill: p.fill, filled, zero: filled && p.state === 'measured_zero', quiet: p.quiet, selected: p.selected});
     }
     for (const id of Object.values(PROVINCE_LAYERS)) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
     return current;

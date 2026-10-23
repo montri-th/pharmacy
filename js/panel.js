@@ -31,6 +31,8 @@ export const dec = n => DEC1.format(n);
 export const dens = n => (n == null || !Number.isFinite(n) ? '—' : n === 0 ? '0' : n < 0.001 ? '<0.001' : n < 0.1 ? DEC3.format(n) : n < 1 ? DEC2.format(n) : DEC1.format(n));
 export const pct = (part, whole) => (whole ? `${NUMBER.format(Math.round((part / whole) * 100))}%` : '—');
 const km = n => (n >= 10 ? NUMBER.format(n) : DEC1.format(n));
+/** A number and its unit never split across lines (“2.1 ร้าน/” + “ตร.กม.” on a phone — live walk 2026-10-23). */
+const nw = html => `<span class="nowrap">${html}</span>`;
 const safeURL = value => { try { const u = new URL(value); return u.protocol === 'https:' ? u.href : ''; } catch { return ''; } };
 
 export function link(url, label, cls = 'source-link') {
@@ -157,7 +159,7 @@ export function renderOverview({insight, summary, overview, focusMode = 'auto', 
   } else if (focusMode === 'explicit') {
     aha = `<section class="aha is-focused" aria-label="ข้อค้นพบ"><p class="eyebrow">กำลังสำรวจ ${num(count)} ${esc(w)}</p>
       <h2>${insight.areas.map(a => esc(a.name)).join(' · ')}</h2>
-      <p class="aha-copy"><strong class="data-number">${num(insight.count)}</strong> ${esc(unit.one)} · <strong class="data-number">${dens(insight.density || 0)}</strong> ${esc(unit.density)}</p>
+      <p class="aha-copy">${nw(`<strong class="data-number">${num(insight.count)}</strong> ${esc(unit.one)}`)} · ${nw(`<strong class="data-number">${dens(insight.density || 0)}</strong> ${esc(unit.density)}`)}</p>
       <div class="aha-actions"><button type="button" data-action="clear-focus" class="btn">ดูทุกพื้นที่</button><button type="button" data-action="open-charts" class="btn quiet">เปรียบเทียบพื้นที่</button></div></section>`;
   } else if (!count) {
     aha = `<section class="aha" aria-label="ข้อค้นพบ"><p class="eyebrow">ข้อค้นพบแรก</p><h2><span class="aha-number data-number">${num(summary.count)}</span><span class="aha-headline">${esc(unit.one)}ตามตัวกรอง — ยังระบุตำบลไม่ได้</span></h2>
@@ -166,12 +168,12 @@ export function renderOverview({insight, summary, overview, focusMode = 'auto', 
     const toggle = focusMode === 'auto'
       ? '<button type="button" data-action="clear-focus" class="btn">ดูทุกพื้นที่</button>'
       : `<button type="button" data-action="explore-top" class="btn primary">โฟกัส ${num(count)} ${esc(w)}นี้</button>`;
-    const outside = insight.outside && !province ? `<p class="aha-secondary">นอก${esc(home)} ${insight.mode === 'density' ? 'แน่นที่สุด' : 'มากที่สุด'}: <button type="button" class="link-button" data-action="select-area" data-id="${esc(insight.outside.id)}">${esc(areaWord(insight.outside.province))}${esc(insight.outside.name)}</button> ${esc(provinceName(insight.outside.province))} <span class="data-number">${insight.mode === 'density' ? dens(insight.outside.density) : num(insight.outside.count)}</span> ${esc(insight.mode === 'density' ? unit.density : unit.one)}</p>` : '';
+    const outside = insight.outside && !province ? `<p class="aha-secondary">นอก${esc(home)} ${insight.mode === 'density' ? 'แน่นที่สุด' : 'มากที่สุด'}: <button type="button" class="link-button" data-action="select-area" data-id="${esc(insight.outside.id)}">${esc(areaWord(insight.outside.province))}${esc(insight.outside.name)}</button> ${esc(provinceName(insight.outside.province))} ${nw(`<span class="data-number">${insight.mode === 'density' ? dens(insight.outside.density) : num(insight.outside.count)}</span> ${esc(insight.mode === 'density' ? unit.density : unit.one)}`)}</p>` : '';
     const rule = `<p class="hint">${unit.mode === 'all' ? 'นับทุกรายการในชุดข้อมูล (อาจซ้ำ)' : 'นับร้านที่มีใบอนุญาต ขย1 ในทะเบียน อย.'}${insight.mode === 'density' ? ` · จัดอันดับเฉพาะพื้นที่ที่มีอย่างน้อย ${num(insight.minRows)} ${esc(unit.one)}` : ''}</p>`;
     if (insight.mode === 'density') {
       aha = `<section class="aha${focusMode === 'auto' ? ' is-auto' : ''}" aria-label="ข้อค้นพบ"><p class="eyebrow">ข้อค้นพบแรก</p>
-        <h2><span class="aha-number data-number">${dens(insight.density)}</span><span class="aha-headline">${esc(unit.density)} — ร้านยาแน่นที่สุดใน ${num(count)} ${esc(w)}นี้</span></h2>
-        <p class="aha-copy">${names}<br><strong class="data-number">${num(insight.count)}</strong> ${esc(unit.one)} ใน ${km(insight.km2)} ตร.กม.${insight.baselineDensity ? ` · ทั้ง${esc(home)} <strong class="data-number">${dens(insight.baselineDensity)}</strong> ${esc(unit.density)}` : ''}</p>
+        <h2><span class="aha-number data-number">${dens(insight.density)}</span><span class="aha-headline">${nw(esc(unit.density))} — ร้านยาแน่นที่สุดใน ${num(count)} ${esc(w)}นี้</span></h2>
+        <p class="aha-copy">${names}<br>${nw(`<strong class="data-number">${num(insight.count)}</strong> ${esc(unit.one)}`)} ใน ${nw(`${km(insight.km2)} ตร.กม.`)}${insight.baselineDensity ? ` · ทั้ง${esc(home)} ${nw(`<strong class="data-number">${dens(insight.baselineDensity)}</strong> ${esc(unit.density)}`)}` : ''}</p>
         ${outside}${rule}
         <div class="aha-actions">${toggle}<button type="button" data-action="open-charts" class="btn quiet">เปรียบเทียบพื้นที่</button></div></section>`;
     } else {

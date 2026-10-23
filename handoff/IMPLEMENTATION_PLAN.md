@@ -25,11 +25,11 @@ npm run verify:live                         # เทียบไบต์บน�
 | `js/area-insight.js` | ข้อค้นพบแรก (จังหวัดที่นำ ฐานเทียบ นอกจังหวัด โหมดจำนวน) |
 | `js/scales.js` | LUT 41 ค่า `density.area`/`count`, `geometricBreaks`, การจัดระดับ, EVID-05 |
 | `js/cues.js` | กลุ่ม → series + รูปทรง, ร้านยาคุณภาพ series 10 |
-| `js/map-layers.js` | choropleth บนขอบเขตที่รวมแล้ว (`setFrames`), `area-hit`, hover, เส้นอำเภอ, ป้าย |
-| `js/provinces.js` | กรอบจังหวัด (count) ต่ำกว่าซูม 8 |
+| `js/map-layers.js` | choropleth บนขอบเขตที่รวมแล้ว (`setFrames`), มุมมองจังหวัด (จังหวัดที่เลือกตั้งแต่ซูม 4), `area-hit`, hover, เส้นอำเภอ, ป้าย |
+| `js/provinces.js` | กรอบจังหวัด (count) ต่ำกว่าซูม 8 เมื่อไม่ได้เลือกจังหวัด |
 | `js/pins.js` | สัญลักษณ์โฟกัส จุดบริบท (เฉพาะแถวที่มีจุด) หมุด HTML |
 | `js/building-join.js` | จุดของร้าน × ขอบอาคารที่วาด |
-| `js/massing.js` · `js/geometry.js` · `js/mvt.js` · `js/map-style.js` · `js/camera.js` · `js/vendors.js` | สืบจาก Luxury Brands/Restaurants โดยไม่เปลี่ยน |
+| `js/massing.js` · `js/geometry.js` · `js/mvt.js` · `js/map-style.js` · `js/camera.js` · `js/vendors.js` | สืบจาก Luxury Brands/Restaurants; 0.1.1 เปลี่ยนเฉพาะ `massing.js`: ไทล์ ≤ 16 ที่ใกล้กล้องที่สุด และ focus tier จากซูม 12 ใน 3D เมื่อไทล์ครบ |
 | `js/breadcrumb.js` · `js/profile-model.js` · `js/panel.js` · `js/chart-model.js` · `js/charts.js` · `js/navigation.js` · `js/launch.js` | breadcrumb, view models, HTML ของแผง, กราฟ, nav-7 และ help, หน้าโหลด |
 | `scripts/build-boundaries.py` · `scripts/build-data.py` · `scripts/check-lds-parity.mjs` · `scripts/build-handoff.mjs` · `scripts/verify-live.mjs` | สร้างขอบเขต/ข้อมูล, ตรวจ LDS, manifest/bundle, ตรวจเว็บจริง |
 
@@ -37,7 +37,7 @@ npm run verify:live                         # เทียบไบต์บน�
 
 ตัวกรอง: `search`, `group`, `quality`, `province`, `brand`, `count` · URL: + `district`, `area`, `areas`, `view`, `store`, `view3d` · scopes ตาม Product Brief §3 · actions ตาม `panel.actions`
 
-## 4. งาน (รุ่น 0.1.0)
+## 4. งาน (รุ่น 0.1.0 → 0.1.1)
 
 | งาน | สิ่งที่ทำ | AC | สถานะ |
 |---|---|---|---|
@@ -50,11 +50,12 @@ npm run verify:live                         # เทียบไบต์บน�
 | P07 | แผนที่: choropleth จังหวัด หมุด มวลอาคาร join กล้อง ป้าย | AC03 AC04 AC16–AC18 AC26 | done |
 | P08 | กราฟและตาราง | AC14 AC15 | done |
 | P09 | tests, LDS parity, เอกสาร, handoff | AC23 AC24 | done |
-| P10 | เผยแพร่ GitHub Pages และตรวจเว็บจริง | AC25 AC19 AC20 | done (ผลใน VERIFICATION.md) |
+| P10 | เผยแพร่ GitHub Pages และตรวจเว็บจริง | AC25 AC19 AC20 | ดูสถานะใน `implementation-plan.json` และผลใน VERIFICATION.md |
+| P11 | แก้สิ่งที่พบจากการเดินตรวจเว็บจริง (0.1.1): มวลอาคารในภาพแรก มุมมองจังหวัด ป้ายระดับสูงสุด แถบเครื่องมือบนมือถือ หน่วยไม่แยกบรรทัด คำของจุดนอกโฟกัส | AC03 AC12 AC20 | เหมือน P10 |
 
 ## 5. Acceptance criteria
 
-AC01 โหลดครั้งแรก · AC02 ข้อค้นพบเริ่มต้น · AC03 ภาพแรก 3D · AC04 ดูทุกพื้นที่ · AC05 เปลี่ยนตัวกรอง · AC06 หน่วยนับ · AC07 ศูนย์และแถวที่ระบุไม่ถึงตำบล · AC08 แขวง/ตำบล · AC09 เขต/อำเภอ · AC10 ร้าน · AC11 breadcrumb · AC12 ทั้งประเทศ · AC13 ขอบเขตตามต้องการ · AC14 กราฟ · AC15 ตาราง · AC16 ซูมใกล้ · AC17 อาคาร · AC18 ย้ายพื้นที่ข้าง ๆ · AC19 ธีม · AC20 มือถือ 390 px · AC21 แผนที่ล้มเหลว · AC22 URL · AC23 ความถูกต้องของข้อมูล · AC24 LDS parity · AC25 เว็บจริง · AC26 attribution · AC27 การเลือกที่ว่าง — รายละเอียดและผลใน `implementation-plan.json` และ VERIFICATION.md
+AC01 โหลดครั้งแรก · AC02 ข้อค้นพบเริ่มต้น · AC03 ภาพแรก 3D · AC04 ดูทุกพื้นที่ · AC05 เปลี่ยนตัวกรอง · AC06 หน่วยนับ · AC07 ศูนย์และแถวที่ระบุไม่ถึงตำบล · AC08 แขวง/ตำบล · AC09 เขต/อำเภอ · AC10 ร้าน · AC11 breadcrumb · AC12 ทั้งประเทศและมุมมองจังหวัด · AC13 ขอบเขตตามต้องการ · AC14 กราฟ · AC15 ตาราง · AC16 ซูมใกล้ · AC17 อาคาร · AC18 ย้ายพื้นที่ข้าง ๆ · AC19 ธีม · AC20 มือถือ 390 px · AC21 แผนที่ล้มเหลว · AC22 URL · AC23 ความถูกต้องของข้อมูล · AC24 LDS parity · AC25 เว็บจริง · AC26 attribution · AC27 การเลือกที่ว่าง — รายละเอียดและผลใน `implementation-plan.json` และ VERIFICATION.md
 
 ## 6. วิธีทำงานต่อ
 

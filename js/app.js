@@ -24,14 +24,16 @@
  *
  * Focus + quiet on the map: data fills, cue pins and rounded focus massing only for the focused part;
  * everything else stays visible but quiet (outline-only areas, grey dots, pale city massing). Below
- * PROVINCE_FILL_MAX_ZOOM the province frames carry the reading (counts).
+ * PROVINCE_FILL_MAX_ZOOM the province frames carry the reading (counts) — except with a จังหวัด filter:
+ * that province shows its own แขวง/ตำบล at every zoom (province view) and is fitted whole.
  *
  * Buildings: the published points of the scope are joined to the focus-tier OSM footprints the map draws
  * (js/building-join.js, “จุดตกในอาคาร”). A building is a click target: one point opens the store, several open
  * the building panel; the opened building (or the building of the open store) is drawn in the data colour.
  *
- * Map clicks, in order: focus pin → focus building → province (country zoom) → แขวง/ตำบล (`area-hit`, every
- * zoom from AREA_MIN_ZOOM). Quiet context dots are never targets.
+ * Map clicks, in order: focus pin → focus building → below PROVINCE_FILL_MAX_ZOOM a แขวง/ตำบล of the selected
+ * จังหวัด, else a province → แขวง/ตำบล (`area-hit`, every zoom from AREA_MIN_ZOOM). Quiet context dots are
+ * never targets.
  * Panel modes: overview | district | area | building | store (with a back stack).
  * URL state: filters, district, area, areas, view, store, view3d.
  */
@@ -41,7 +43,7 @@ import {summarizeAreaInsight, filterAreaRows, MIN_AREA_ROWS} from './area-insigh
 import {renderInsightChart} from './charts.js';
 import {loadMapLibrary} from './vendors.js';
 import {installPharmacyPins} from './pins.js';
-import {installAreaLayers, installAreaLabels, buildAreaModel, AREA_MIN_ZOOM} from './map-layers.js';
+import {installAreaLayers, installAreaLabels, buildAreaModel, AREA_MIN_ZOOM, PROVINCE_VIEW_MIN_ZOOM} from './map-layers.js';
 import {installProvinceLayers, buildProvinceModel, PROVINCE_FILL_MAX_ZOOM, PROVINCE_LABEL_MAX_ZOOM} from './provinces.js';
 import {createFrameStore, provinceLocator} from './frames.js';
 import {buildOverview, buildAreaProfile, buildDistrictProfile, buildStoreDetail, buildBuildingProfile, listOrder} from './profile-model.js';
@@ -340,7 +342,7 @@ function renderMapAha(insight) {
   const names = insight.areas.map(a => esc(a.name)).join(' · ');
   el.innerHTML = mode === 'explicit'
     ? `<div>${crumb}<h2>กำลังสำรวจ ${num(insight.areas.length)} พื้นที่</h2><p>${num(insight.count)} ${esc(u.one)}</p></div><button type="button" class="btn" data-action="clear-focus">ดูทุกพื้นที่</button>`
-    : `<div>${crumb}<h2>${insight.mode === 'density' ? `${dens(insight.density)} ${esc(u.density)} ใน ${num(insight.areas.length)} พื้นที่ที่แน่นที่สุด` : `${num(Math.round(insight.share))}% ของ${esc(u.one)}อยู่ใน ${num(insight.areas.length)} พื้นที่`}</h2><p>${names}</p></div>${mode === 'auto'
+    : `<div>${crumb}<h2>${insight.mode === 'density' ? `<span class="nowrap">${dens(insight.density)} ${esc(u.density)}</span> ใน ${num(insight.areas.length)} พื้นที่ที่แน่นที่สุด` : `${num(Math.round(insight.share))}% ของ${esc(u.one)}อยู่ใน ${num(insight.areas.length)} พื้นที่`}</h2><p>${names}</p></div>${mode === 'auto'
       ? '<button type="button" class="btn" data-action="clear-focus">ดูทุกพื้นที่</button>'
       : '<button type="button" class="btn primary" data-action="explore-top">โฟกัส</button>'}`;
 }
@@ -595,7 +597,10 @@ function onPanelAction(event) {
 }
 
 /* ---------- legend ---------- */
-const provinceZoom = () => Boolean(state.provinceLayers) && (state.map?.getZoom?.() ?? 12) < PROVINCE_FILL_MAX_ZOOM;
+/** Below subdistrict zoom (the province frames' window), whether or not a จังหวัด is selected. */
+const belowAreaZoom = () => Boolean(state.provinceLayers) && (state.map?.getZoom?.() ?? 12) < PROVINCE_FILL_MAX_ZOOM;
+/** The province frames carry the reading: below subdistrict zoom with no จังหวัด filter (else: province view). */
+const provinceZoom = () => belowAreaZoom() && !$('province').value;
 function renderLegend() {
   const u = unit(), atProvince = provinceZoom(), steps = $('legend-steps');
   const step = c => `<span class="legend-step"><i style="background:${c.fill}" aria-hidden="true"></i>${esc(c.label)}</span>`;
@@ -756,8 +761,7 @@ function fitMap({instant = false} = {}) {
   const target = fitPitched(state.map, b, {preset, padding: pitched ? pitchedPadding() : cameraPadding(), maxZoom: 15, minZoom: 4.5, apply: false,
     points: focus.length ? focus.flatMap(recordPoints) : null, shift: mobilePortrait() && !wide ? -0.12 : null});
   if (!target) return;
-  // A province frame is held at subdistrict zoom, so its choropleth (not the province count) is what shows.
-  if (!focus.length) target.zoom = Math.max(target.zoom, AREA_MIN_ZOOM + 0.05);
+  // A province is fitted whole: its แขวง/ตำบล are drawn at every zoom (province view), so no zoom floor is needed.
   if (animate() && !instant) state.map.easeTo({...target, duration: 650}); else state.map.jumpTo(target);
 }
 
@@ -770,6 +774,8 @@ function areaLabelItems() {
   const m = state.areaModel;
   if (!m) return [];
   const u = unit(), zoom = state.map?.getZoom?.() ?? 12;
+  // Below subdistrict zoom only the province view labels areas (its focus / selection; quiet chips need zoom ≥ 9.5).
+  if (zoom < AREA_MIN_ZOOM && !$('province').value) return [];
   const focus = new Set(state.selectedArea ? [state.selectedArea] : state.focusIds);
   const district = state.selectedDistrict;
   const quietOK = zoom >= (district ? 9.5 : 11);
@@ -823,7 +829,7 @@ function refreshLabelView() {
       if (!best.has(id) || d < best.get(id).d) best.set(id, {center: ll, d});
     }
   }
-  const bucket = `${zoom >= 9.5 ? 1 : 0}${zoom >= 11 ? 1 : 0}`;
+  const bucket = `${zoom >= AREA_MIN_ZOOM ? 1 : 0}${zoom >= 9.5 ? 1 : 0}${zoom >= 11 ? 1 : 0}`;
   const key = `${bucket}|${[...best].map(([id, b]) => `${id}:${b.center.map(v => v.toFixed(5)).join(',')}`).sort().join('|')}`;
   if (key === refreshLabelView.key) return;
   refreshLabelView.key = key;
@@ -880,7 +886,7 @@ function updateSpatialLayers() {
   const districtAreas = state.selectedDistrict ? (districtById(state.selectedDistrict)?.areas || []).map(a => a.id) : [];
   const focusIds = mapFocusIds();
   syncMapFocus.key = focusIds.join(',');
-  state.areaLayers?.update({model: state.areaModel, selectedId: state.selectedArea, focusIds: state.selectedDistrict ? districtAreas : focusIds, outlineFocus: !state.selectedDistrict, districtId: state.selectedDistrict, visible: state.showAreas});
+  state.areaLayers?.update({model: state.areaModel, selectedId: state.selectedArea, focusIds: state.selectedDistrict ? districtAreas : focusIds, outlineFocus: !state.selectedDistrict, districtId: state.selectedDistrict, visible: state.showAreas, provinceCode: code});
   state.labels?.update(state.showAreas ? areaLabelItems() : [], {visible: state.showAreas});
   renderLegend();
   const anchorRecords = (state.selectedArea ? [areaById(state.selectedArea)] : state.selectedDistrict ? [districtById(state.selectedDistrict)] : state.focusIds.map(areaById)).filter(Boolean);
@@ -888,6 +894,20 @@ function updateSpatialLayers() {
   state.massing?.update({regions: massingRegions(), hosts: [], anchors: anchors.length ? anchors : [state.map.getCenter().toArray()], enabled: true, city: state.view3d, zoom: state.map.getZoom(), latitude: state.map.getCenter().lat})?.catch(e => console.warn('Massing', e));
   applyJoin();
   state.pins?.layout();
+}
+
+/** Below subdistrict zoom: the แขวง/ตำบล of the selected จังหวัด under a point ('' outside it or without a filter). */
+function provinceViewArea(point) {
+  const code = $('province').value;
+  if (!code || !state.showAreas) return '';
+  const id = state.areaLayers?.hitTest(point) || '';
+  return id && areaById(id)?.province === code ? id : '';
+}
+/** The province frame under a point (its code, or ''). Quiet frames (opacity 0) still answer the query. */
+function provinceAt(point) {
+  const layers = ['province-fill'].filter(id => state.map.getLayer(id));
+  const f = layers.length ? state.map.queryRenderedFeatures(point, {layers})[0] : null;
+  return f ? String(f.id ?? f.properties?.id) : '';
 }
 
 /** What a building under the pointer would open (null: nothing → the click falls through). */
@@ -911,9 +931,13 @@ function onMapClick(e) {
   const hit = buildingTarget(point);
   if (hit?.kind === 'store') { if (state.panel.mode !== 'store' || state.panel.id !== hit.id) selectStore(hit.id, {fly: false, showPopup: true, fromPin: true}); return; }
   if (hit?.kind === 'building') { if (state.panel.mode !== 'building' || state.panel.id !== hit.key) selectBuilding(hit.key); return; }
-  if (provinceZoom()) {
-    const p = state.map.queryRenderedFeatures(point, {layers: ['province-fill'].filter(id => state.map.getLayer(id))})[0];
-    if (p) { selectProvince(String(p.id ?? p.properties?.id)); return; }
+  if (belowAreaZoom()) {
+    // Province view: a แขวง/ตำบล of the selected จังหวัด; anywhere else a province frame (another จังหวัด).
+    const area = provinceViewArea(point);
+    if (area) { if (area !== state.selectedArea) selectArea(area, {fromMap: true}); return; }
+    const code = provinceAt(point);
+    if (code && code !== $('province').value) selectProvince(code);
+    return;
   }
   if (!state.showAreas) return;
   const id = state.areaLayers?.hitTest(point) || '';
@@ -930,8 +954,11 @@ function onMapMove(e) {
     if (!map || !state.loaded || !p) return;
     let over = Boolean(state.pins?.hitTest(p)) || Boolean(buildingTarget(p));
     let area = '';
-    if (!over && provinceZoom()) over = state.map.queryRenderedFeatures(p, {layers: ['province-fill'].filter(id => map.getLayer(id))}).length > 0;
-    else if (!over && state.showAreas && map.getZoom() >= AREA_MIN_ZOOM) {
+    if (!over && belowAreaZoom()) {
+      const inProvince = provinceViewArea(p);
+      if (inProvince) area = inProvince === state.selectedArea ? '' : inProvince;
+      else { const code = provinceAt(p); over = Boolean(code) && code !== $('province').value; }
+    } else if (!over && state.showAreas && map.getZoom() >= AREA_MIN_ZOOM) {
       area = state.areaLayers?.hitTest(p) || '';
       if (area === state.selectedArea) area = '';
     }
@@ -957,7 +984,8 @@ function installSpatialLayers() {
   state.pins = installPharmacyPins(map, $('map'), {
     reservedBottom: bottomSpace,
     onSelect: r => selectStore(r.id, {fly: false, showPopup: true, fromPin: true}),
-    onLayout: stats => { $('map-status').textContent = `${num(stats.focusInView)} ${unit().one}ที่มีพิกัดในจอ · จุดบริบท ${num(stats.contextRows)}`; },
+    // The context figure is every grey point of the selection outside the focus, not only those on screen.
+    onLayout: stats => { $('map-status').textContent = `${num(stats.focusInView)} ${unit().one}ที่มีพิกัดในจอ${stats.contextRows ? ` · จุดนอกโฟกัสทั้งหมด ${num(stats.contextRows)}` : ''}`; },
   });
   updatePins();
   updateSpatialLayers();
@@ -1000,7 +1028,7 @@ function initMap() {
     state.map = new maplibregl.Map({container: 'map', center: BANGKOK.center, zoom: BANGKOK.zoom, pitch: 0, maxPitch: 85, attributionControl: {compact: true}, locale: MAP_LOCALE, style: buildMapStyle(state.mapTheme)});
     state.map.addControl(new maplibregl.NavigationControl({showCompass: true, visualizePitch: true}), 'top-right');
     state.attribObserver = trackAttribution(state.map);
-    state.labels = installAreaLabels(state.map, $('map'), {className: 'neighborhood-label', hostId: 'area-labels', hostLabel: 'แขวง/ตำบลบนแผนที่', minZoom: AREA_MIN_ZOOM, verb: 'กดเพื่อสำรวจพื้นที่', onSelect: id => selectArea(id, {fromMap: true}), reservedBottom: labelBottomSpace, maxLabels: 40});
+    state.labels = installAreaLabels(state.map, $('map'), {className: 'neighborhood-label', hostId: 'area-labels', hostLabel: 'แขวง/ตำบลบนแผนที่', minZoom: PROVINCE_VIEW_MIN_ZOOM, verb: 'กดเพื่อสำรวจพื้นที่', onSelect: id => selectArea(id, {fromMap: true}), reservedBottom: labelBottomSpace, maxLabels: 40});
     state.provinceLabels = installAreaLabels(state.map, $('map'), {className: 'province-label', hostId: 'province-labels', hostLabel: 'จังหวัดบนแผนที่', minZoom: 0, maxZoom: PROVINCE_LABEL_MAX_ZOOM, verb: 'กดเพื่อดูจังหวัด', detailZoomClass: false, onSelect: code => selectProvince(code), reservedBottom: labelBottomSpace, maxLabels: 77});
     state.map.on('zoomend', () => { if (state.loaded) renderLegend(); });
     // Coalesced: a camera fit jumps the map many times in one task; labels and frame loading follow the last position.

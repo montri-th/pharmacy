@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {parseVectorTile, tileToLonLat} from '../js/mvt.js';
 import {pointInRing, signedArea} from '../js/geometry.js';
-import {shapeTile, tilesForRegions, roundingRadiusM, encloseOffsetM, outerRings, installMassing, focusFeatureId, HEIGHT_LIFT_M, MAX_TILES, CITY_LAYER, FOCUS_LAYER, FOCUS_SOURCE, OCCLUDER_LAYER, VENUE_LAYER, SCENE, FADE_NEAR_M, FADE_FAR_M} from '../js/massing.js';
+import {shapeTile, tilesForRegions, roundingRadiusM, encloseOffsetM, outerRings, installMassing, focusFeatureId, HEIGHT_LIFT_M, MAX_TILES, CITY_MIN_ZOOM, FOCUS_MIN_ZOOM, CITY_LAYER, FOCUS_LAYER, FOCUS_SOURCE, OCCLUDER_LAYER, VENUE_LAYER, SCENE, FADE_NEAR_M, FADE_FAR_M} from '../js/massing.js';
+import {readJSON} from './helpers.js';
 
 const tile = {z: 14, x: 12767, y: 7560};
 const layer = parseVectorTile(readFileSync(new URL('./fixtures/mvt-sample.pbf', import.meta.url))).layers.building;
@@ -83,11 +84,30 @@ test('tile planning is bounded and rounding radius follows zoom within 3–12 m'
   assert.deepEqual(outerRings({geometry: {type: 'MultiPolygon', coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]]], [[[2, 2], [3, 2], [3, 3], [2, 2]]]]}}).length, 2);
 });
 
+test('the national first Aha (three Bangkok แขวง) fits the tile bound; a larger focus keeps the tiles nearest the camera', () => {
+  const index = readJSON('data/area-index.json').areas;
+  const ring = id => { const [w, s, e, n] = index.bbox[index.id.indexOf(id)]; return [[w, s], [e, s], [e, n], [w, n], [w, s]]; };
+  // ดินแดง · คลองเตยเหนือ · ลุมพินี (tests/insight.test.js): 11 z14 tiles — all of them, so the tier can draw from zoom 12.
+  const aha = tilesForRegions(['102601', '103901', '100704'].map(ring));
+  assert.equal(aha.total, 11);
+  assert.equal(aha.truncated, false);
+  assert.ok(FOCUS_MIN_ZOOM < CITY_MIN_ZOOM && CITY_MIN_ZOOM === 13);
+  // A 5×5-tile region bounded to 4: the four tiles around the camera are kept, wherever the camera is.
+  const big = [[10, 10], [20470, 10], [20470, 20470], [10, 20470], [10, 10]].map(([px, py]) => tileToLonLat(px, py, tile));
+  const plan = tilesForRegions([big], 14, 4, tileToLonLat(4096 * 3, 4096 * 3, tile));
+  assert.equal(plan.truncated, true);
+  assert.equal(plan.total, 25);
+  assert.deepEqual(plan.tiles.map(t => `${t.x - tile.x},${t.y - tile.y}`).sort(), ['2,2', '2,3', '3,2', '3,3']);
+  const corner = tilesForRegions([big], 14, 1, tileToLonLat(100, 100, tile));
+  assert.deepEqual([corner.tiles[0].x, corner.tiles[0].y], [tile.x, tile.y]);
+});
+
 /** Minimal MapLibre stand-in: layers, sources, zoom and events. */
 function fakeMap() {
   const layers = new Map(), sources = new Map([['openmaptiles', {}]]), handlers = {};
   return {
-    layers, sources, filters: {}, visibility: {}, data: {},
+    layers, sources, filters: {}, visibility: {}, data: {}, zoomRange: {},
+    setLayerZoomRange(id, min, max) { this.zoomRange[id] = [min, max]; },
     getLayer: id => layers.get(id), getSource: id => sources.get(id),
     addLayer(def) { layers.set(def.id, def); if (def.type !== 'fill-extrusion' || def.source === FOCUS_SOURCE) return; },
     addSource(id, def) { sources.set(id, {setData: d => { this.data[id] = d; }}); },
@@ -125,14 +145,27 @@ test('installMassing reports every applied result through onResult (also empty/p
   assert.ok(fetched.includes('stub/14/12767/7560.pbf'));
   assert.deepEqual(results.at(-1), first, 'applied result reached onResult');
   assert.equal(map.visibility[CITY_LAYER], 'visible');
+  // 3D with the whole focus loaded: the focus tiers draw from FOCUS_MIN_ZOOM (the first Aha frames z12.6).
+  assert.equal(first.truncated, false);
+  for (const id of [FOCUS_LAYER, OCCLUDER_LAYER, VENUE_LAYER]) assert.deepEqual(map.zoomRange[id], [FOCUS_MIN_ZOOM, 24], id);
   // Same input → cached, nothing re-fetched, onResult not called again.
   const again = await massing.update({regions: [region], hosts: [], zoom: 15.5, enabled: true, city: true, latitude: 13.75});
   assert.equal(again.cached, true);
   assert.equal(results.length, 1);
-  // Plan view keeps the focus tier (flat rounded footprints) and hides the city tier.
+  // Plan view keeps the focus tier (flat rounded footprints) and hides the city tier; flat footprints wait for zoom 13.
   await massing.update({regions: [region], hosts: [], zoom: 15.5, enabled: true, city: false, latitude: 13.75});
   assert.equal(map.visibility[CITY_LAYER], 'none');
   assert.equal(map.visibility[FOCUS_LAYER], 'visible');
+  assert.deepEqual(map.zoomRange[FOCUS_LAYER], [CITY_MIN_ZOOM, 24]);
+  // A zoom-triggered rebuild (no `city` argument) keeps the plan view's hidden city tier.
+  await massing.update({zoom: 16.2});
+  assert.equal(map.visibility[CITY_LAYER], 'none');
+  // A focus larger than the bound waits for zoom 13 even in 3D (no cut block at zoom 12).
+  const big = [[10, 10], [20470, 10], [20470, 20470], [10, 20470], [10, 10]].map(([px, py]) => tileToLonLat(px, py, tile));
+  const wide = await massing.update({regions: [big], hosts: [], zoom: 15.5, enabled: true, city: true, latitude: 13.75, center: tileToLonLat(100, 100, tile)});
+  assert.equal(wide.truncated, true);
+  assert.equal(wide.tiles, MAX_TILES);
+  assert.deepEqual(map.zoomRange[FOCUS_LAYER], [CITY_MIN_ZOOM, 24]);
   // No focus → focus source emptied and the empty result is reported too.
   const none = await massing.update({regions: [], hosts: [], zoom: 15.5, enabled: true, city: true, latitude: 13.75});
   assert.equal(none.features, 0);

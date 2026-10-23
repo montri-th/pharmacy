@@ -91,7 +91,12 @@ export function geometricBreaks(max, n = 5, {integer = false} = {}) {
 
 const fmtFor = v => new Intl.NumberFormat('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: v >= 1 ? 0 : v >= 0.1 ? 1 : v >= 0.01 ? 2 : 3});
 const fmt = v => fmtFor(v).format(v);
-const fmtTop = v => new Intl.NumberFormat('th-TH', {maximumFractionDigits: v >= 10 ? 0 : v >= 1 ? 1 : v >= 0.1 ? 2 : 3}).format(v);
+/**
+ * The closed top bound prints exactly as a density value prints (js/panel.js#dens: one decimal from 1, two
+ * below 1, three below 0.1), so the densest area's own label never exceeds its class (live walk 2026-10-23:
+ * the legend said “10–41” beside the label “สุริยวงศ์ 41.2”).
+ */
+const fmtTop = v => { const d = v >= 1 ? 1 : v >= 0.1 ? 2 : 3; return new Intl.NumberFormat('th-TH', {minimumFractionDigits: d, maximumFractionDigits: d}).format(v); };
 
 function build(values, scale, {n = 5, integer = false, unit = ''} = {}) {
   const measured = (Array.isArray(values) ? values : []).filter(v => Number.isFinite(v) && v > 0);
@@ -112,7 +117,10 @@ function build(values, scale, {n = 5, integer = false, unit = ''} = {}) {
       const lo = i === 0 ? 1 : lower, hi = last ? Math.round(upper) : upper - 1;
       label = lo === hi ? fmt(lo) : `${fmt(lo)}–${fmt(hi)}`;
     }
-    else label = i === 0 ? `>0–${fmt(upper)}` : last ? `${fmt(lower)}–${fmtTop(upper)}` : `${fmt(lower)}–${fmt(upper)}`;
+    else {
+      const top = last ? fmtTop(upper) : fmt(upper);
+      label = i === 0 ? `>0–${top}` : `${fmt(lower)}–${top}`;
+    }
     classes.push({index: picks[i], lower, upper, closed: last, fill: colors[picks[i]], ink: inkFor(colors[picks[i]]), label});
   }
   return {scaleId: scale.scaleId, unit, method: 'geometric-1-2-5', classCount: classes.length, max, breaks, classes, zero};

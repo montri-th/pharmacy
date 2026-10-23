@@ -58,7 +58,19 @@ export const SCENE = Object.freeze({
 export const FADE_NEAR_M = 500;
 export const FADE_FAR_M = 2200;
 export const TILE_ZOOM = 14;
-export const MAX_TILES = 9;
+/**
+ * Bound on z14 tiles fetched for the focus tier. The national first Aha (three Bangkok แขวง, 10 km²)
+ * needs 11 (tests/massing.test.js); a larger focus keeps the tiles nearest the camera (tilesForRegions).
+ */
+export const MAX_TILES = 16;
+/** The city tier comes straight from basemap tiles, which carry no buildings below zoom 13. */
+export const CITY_MIN_ZOOM = 13;
+/**
+ * The focus tier is fetched at z14 whatever the camera zoom, so in 3D it can draw from zoom 12 — the zoom of
+ * a first Aha that frames three แขวง (verified live 2026-10-23: z12.6, no massing at all with 13). Only when
+ * every tile of the focus is loaded: a truncated focus would show a cut block, so it waits for zoom 13.
+ */
+export const FOCUS_MIN_ZOOM = 12;
 export const HEIGHT_LIFT_M = 0.35;
 
 /**
@@ -148,11 +160,26 @@ export function shapeTile(tile, layer, {regions = [], hosts = [], radiusM, offse
   return {features, footprints, hiddenIds, kept, dropped};
 }
 
-/** Tiles needed for a set of lon/lat regions (deduplicated, bounded by MAX_TILES). */
-export function tilesForRegions(regions, z = TILE_ZOOM, max = MAX_TILES) {
+/** Fractional tile coordinates of a lon/lat at zoom z (Web Mercator). */
+function tileXY([lon, lat], z) {
+  const n = 2 ** z, rad = (lat * Math.PI) / 180;
+  return [((lon + 180) / 360) * n, ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n];
+}
+
+/**
+ * Tiles needed for a set of lon/lat regions (deduplicated, bounded by `max`). Over the bound, the tiles
+ * nearest `center` (the camera, [lon, lat]) are kept, so the detail follows the part of a large แขวง/ตำบล
+ * being looked at; without a centre the order is the regions' own.
+ */
+export function tilesForRegions(regions, z = TILE_ZOOM, max = MAX_TILES, center = null) {
   const keys = new Map();
   for (const ring of regions) for (const t of tilesForBBox(bboxOfRings([ring]), z)) keys.set(`${t.z}/${t.x}/${t.y}`, t);
-  const tiles = [...keys.values()];
+  let tiles = [...keys.values()];
+  if (tiles.length > max && Array.isArray(center) && center.every(Number.isFinite)) {
+    const [cx, cy] = tileXY(center, z);
+    const d = t => (t.x + 0.5 - cx) ** 2 + (t.y + 0.5 - cy) ** 2;
+    tiles = tiles.sort((a, b) => d(a) - d(b) || a.x - b.x || a.y - b.y);
+  }
   return {tiles: tiles.slice(0, max), truncated: tiles.length > max, total: tiles.length};
 }
 
@@ -164,14 +191,14 @@ export function tilesForRegions(regions, z = TILE_ZOOM, max = MAX_TILES) {
 export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors, tileUrl, fetchImpl = (...a) => fetch(...a), onResult = null} = {}) {
   const palette = {quiet: '#ECEBE5', focus: '#E6E3DA', ground: '#EEF1EE', venue: '#347DA8', ...colors};
   const cityColor = () => ['interpolate', ['linear'], ['coalesce', ['feature-state', 'fade'], 1], 0, palette.quiet, 1, palette.ground];
-  let enabled = true, hiddenIds = [], disposed = false, token = 0, lastKey = '', lastBucket = -1;
-  let lastInput = {regions: [], hosts: [], latitude: 13.75};
+  let enabled = true, hiddenIds = [], disposed = false, token = 0, lastKey = '', lastBucket = -1, lastTruncated = false;
+  let lastInput = {regions: [], hosts: [], latitude: 13.75, city: true};
   const cache = new Map();
 
   const before = beforeId && map.getLayer(beforeId) ? beforeId : undefined;
   if (map.getSource(sourceId) && !map.getLayer(CITY_LAYER)) {
     map.addLayer({
-      id: CITY_LAYER, type: 'fill-extrusion', source: sourceId, 'source-layer': 'building', minzoom: 13,
+      id: CITY_LAYER, type: 'fill-extrusion', source: sourceId, 'source-layer': 'building', minzoom: CITY_MIN_ZOOM,
       filter: cityFilter(),
       paint: {
         'fill-extrusion-color': cityColor(),
@@ -188,7 +215,7 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
   const focusFilter = () => ['all', notIn(occluderIds), notIn(highlightIds)];
   const occluderFilter = () => (highlightIds.length ? ['all', ['in', ['id'], ['literal', occluderIds]], notIn(highlightIds)] : ['in', ['id'], ['literal', occluderIds]]);
   map.addLayer({
-    id: FOCUS_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: 13,
+    id: FOCUS_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: CITY_MIN_ZOOM,
     filter: focusFilter(),
     paint: {
       'fill-extrusion-color': palette.focus,
@@ -199,7 +226,7 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
     },
   }, before);
   map.addLayer({
-    id: OCCLUDER_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: 13,
+    id: OCCLUDER_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: CITY_MIN_ZOOM,
     filter: occluderFilter(),
     paint: {
       'fill-extrusion-color': palette.focus,
@@ -211,7 +238,7 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
   }, before);
   // Added last of the three focus tiers, so it draws after them (the data layer is never cut away).
   map.addLayer({
-    id: VENUE_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: 13,
+    id: VENUE_LAYER, type: 'fill-extrusion', source: FOCUS_SOURCE, minzoom: CITY_MIN_ZOOM,
     filter: ['in', ['id'], ['literal', highlightIds]],
     paint: {
       'fill-extrusion-color': palette.venue,
@@ -244,27 +271,37 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
     return task;
   }
 
+  /** Lowest zoom of the focus tiers: FOCUS_MIN_ZOOM in 3D when the whole focus is loaded, else CITY_MIN_ZOOM. */
+  let focusMinZoom = CITY_MIN_ZOOM;
+  function setFocusMinZoom(z) {
+    if (z === focusMinZoom || typeof map.setLayerZoomRange !== 'function') return;
+    focusMinZoom = z;
+    for (const id of [FOCUS_LAYER, OCCLUDER_LAYER, VENUE_LAYER]) if (map.getLayer(id)) map.setLayerZoomRange(id, z, 24);
+  }
+
   /**
    * regions: lon/lat outer rings of the focused neighborhoods; hosts: rings of
-   * host buildings currently drawn by buildings.js; zoom: current map zoom.
+   * host buildings currently drawn by buildings.js; zoom: current map zoom;
+   * city: the city tier is shown (3D) — kept for zoom- and move-triggered rebuilds.
    */
-  async function update({regions = lastInput.regions, hosts = lastInput.hosts, zoom = map.getZoom(), enabled: on = enabled, city = enabled, latitude = lastInput.latitude, anchors: nextAnchors = null} = {}) {
+  async function update({regions = lastInput.regions, hosts = lastInput.hosts, zoom = map.getZoom(), enabled: on = enabled, city = lastInput.city ?? enabled, latitude = lastInput.latitude, anchors: nextAnchors = null, center = null} = {}) {
     enabled = on;
-    lastInput = {regions, hosts, latitude};
+    lastInput = {regions, hosts, latitude, city};
     if (nextAnchors) setAnchors(nextAnchors);
     // In plan view (pitch 0) the focus tier still draws as flat rounded footprints; the city tier is hidden.
     if (map.getLayer(CITY_LAYER)) map.setLayoutProperty(CITY_LAYER, 'visibility', enabled && city ? 'visible' : 'none');
     for (const id of [FOCUS_LAYER, OCCLUDER_LAYER]) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', enabled ? 'visible' : 'none');
     const bucket = Math.floor(zoom);
-    const {tiles, truncated} = tilesForRegions(regions);
+    const camera = center || (typeof map.getCenter === 'function' ? map.getCenter().toArray() : null);
+    const {tiles, truncated} = tilesForRegions(regions, TILE_ZOOM, MAX_TILES, camera);
     const ready = typeof tileUrl === 'function' && tiles.length > 0 && tiles.every(t => Boolean(tileUrl(t)));
     const ringKey = rings => `${rings.length}:${rings.map(r => r.length + ':' + r[0]?.join(',')).join('|')}`;
-    const key = `${enabled}|${ready}|${bucket}|${ringKey(regions)}|${ringKey(hosts)}`;
+    const key = `${enabled}|${ready}|${bucket}|${city}|${ringKey(regions)}|${ringKey(hosts)}|${tiles.map(t => `${t.x}/${t.y}`).join(',')}`;
     if (key === lastKey) return {features: 0, tiles: 0, cached: true};
-    lastKey = key; lastBucket = bucket;
+    lastKey = key; lastBucket = bucket; lastTruncated = truncated;
     if (!enabled || !regions.length || !ready) {
       map.getSource(FOCUS_SOURCE)?.setData({type: 'FeatureCollection', features: []}); setHidden([]);
-      currentFeatures = []; setFootprints([]); setOccluders([]);
+      currentFeatures = []; setFootprints([]); setOccluders([]); setFocusMinZoom(CITY_MIN_ZOOM);
       const empty = {features: 0, tiles: 0, ready};
       if (typeof onResult === 'function') { try { onResult(empty); } catch (e) { console.warn('Massing onResult', e); } }
       return empty;
@@ -292,8 +329,9 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
     setFootprints(footprints);
     map.getSource(FOCUS_SOURCE)?.setData({type: 'FeatureCollection', features});
     setHidden(hidden);
+    setFocusMinZoom(city && !truncated ? FOCUS_MIN_ZOOM : CITY_MIN_ZOOM);
     updateOcclusion();
-    const result = {features: kept, droppedForHosts: dropped, tiles: tiles.length, truncated, radiusM, offsetM, occluders: occluderIds.length, version};
+    const result = {features: kept, droppedForHosts: dropped, tiles: tiles.length, truncated, minZoom: focusMinZoom, radiusM, offsetM, occluders: occluderIds.length, version};
     // Every applied result (including zoom-triggered rebuilds) reaches the host app through onResult,
     // so a caller whose own update was superseded still sees the figures that are on screen.
     if (typeof onResult === 'function') { try { onResult(result); } catch (e) { console.warn('Massing onResult', e); } }
@@ -445,17 +483,22 @@ export function installMassing(map, {sourceId = 'openmaptiles', beforeId, colors
   }
   // Coalesced: a camera fit jumps the map many times in one task (each jump fires moveend/zoomend);
   // occlusion and the zoom re-shape run once, after the last one.
-  let occlusionTimer = 0, zoomTimer = 0;
+  let occlusionTimer = 0, zoomTimer = 0, retileTimer = 0;
   const onMoveEnd = () => { clearTimeout(occlusionTimer); occlusionTimer = setTimeout(() => { if (!disposed && scene === 'eye' && targets.length) updateOcclusion(); }, 40); };
   map.on('moveend', onMoveEnd);
   const onZoomEnd = () => { clearTimeout(zoomTimer); zoomTimer = setTimeout(() => { if (!disposed && enabled && lastInput.regions.length && Math.floor(map.getZoom()) !== lastBucket) update({zoom: map.getZoom()}); }, 40); };
   map.on('zoomend', onZoomEnd);
+  // A focus larger than MAX_TILES follows the camera: after a move the tiles nearest the new centre are
+  // planned again (an unchanged plan is a cached no-op inside update).
+  const onRetile = () => { clearTimeout(retileTimer); retileTimer = setTimeout(() => { if (!disposed && enabled && lastTruncated && lastInput.regions.length) update({zoom: map.getZoom()}); }, 120); };
+  map.on('moveend', onRetile);
 
   function dispose() {
     disposed = true;
-    clearTimeout(fadeTimer); clearTimeout(occlusionTimer); clearTimeout(zoomTimer);
+    clearTimeout(fadeTimer); clearTimeout(occlusionTimer); clearTimeout(zoomTimer); clearTimeout(retileTimer);
     map.off('zoomend', onZoomEnd);
     map.off('moveend', onMoveEnd);
+    map.off('moveend', onRetile);
     map.off('moveend', scheduleFade);
     map.off('sourcedata', onSourceData);
     try { map.removeFeatureState({source: sourceId, sourceLayer: 'building'}); } catch {}

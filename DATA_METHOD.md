@@ -1,6 +1,6 @@
 # Data and method
 
-ข้อมูลและวิธีของ CityMETER · Pharmacy รุ่น 0.1.0 (23 ตุลาคม 2569; ชีตวิจัยตรวจแหล่ง 22 ต.ค. 2569) ป้ายหลักฐานตาม Landometer Master Brand Brief v0.5.3 §3.7: **Observed fact** · **Inference** · **Hypothesis** · **Owner-stated** · **Project evidence** ตัวเลขทุกตัวในเอกสารนี้มาจากไฟล์ใน repository และอ้าง field path ได้
+ข้อมูลและวิธีของ CityMETER · Pharmacy รุ่น 0.1.1 (23 ตุลาคม 2569; ข้อมูลและวิธีเหมือนรุ่น 0.1.0; ชีตวิจัยตรวจแหล่ง 22 ต.ค. 2569) ป้ายหลักฐานตาม Landometer Master Brand Brief v0.5.3 §3.7: **Observed fact** · **Inference** · **Hypothesis** · **Owner-stated** · **Project evidence** ตัวเลขทุกตัวในเอกสารนี้มาจากไฟล์ใน repository และอ้าง field path ได้
 
 ## 1. แหล่งข้อมูลและวันที่
 

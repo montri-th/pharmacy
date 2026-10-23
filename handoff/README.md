@@ -1,6 +1,6 @@
 # เริ่มงานต่อ — CityMETER Pharmacy
 
-รุ่นส่งต่อ 0.1.0 · 23 ตุลาคม 2569 · ทะเบียน ขย1 ข้อมูล ณ 28 พฤษภาคม 2569 · ตรวจแหล่ง 22 ตุลาคม 2569
+รุ่นส่งต่อ 0.1.1 · 23 ตุลาคม 2569 · ทะเบียน ขย1 ข้อมูล ณ 28 พฤษภาคม 2569 · ตรวจแหล่ง 22 ตุลาคม 2569
 
 ชุดนี้ส่งต่อให้ developer หรือ coding agent พัฒนาต่อจาก repository ที่ใช้งานจริง หลักของรุ่นนี้คือ **นับร้านยาที่มีใบอนุญาตละครั้ง แล้วเห็นเมือง 3 มิติที่โฟกัส 3 แขวง/ตำบลที่ร้านยาแน่นที่สุดของจังหวัดที่นำก่อน (ร้าน/ตร.กม.) เทียบทั้งจังหวัด แสดงรายละเอียดเฉพาะส่วนที่โฟกัส ส่วนอื่นเงียบ และขยายได้ทั้งประเทศด้วยขอบเขตรายจังหวัด** โดยคงสัญญากล้อง basemap และมวลอาคารของ CityMETER · Luxury Brands 0.5 / Restaurants 0.2.1
 
@@ -12,7 +12,7 @@ Live: [Pharmacy](https://montri-th.github.io/pharmacy/) · Source: [GitHub](http
 |---|---|---|
 | [../PRODUCT_STATEMENT.md](../PRODUCT_STATEMENT.md) | [product-statement.json](product-statement.json) | Winning strategy: Who / What / Which / How, quality bar, ป้ายหลักฐาน, hypotheses — อ่านก่อนเปลี่ยนสิ่งที่หน้าแรกบอก |
 | [PRODUCT_BRIEF.md](PRODUCT_BRIEF.md) | [product-brief.json](product-brief.json) | row scopes, หน่วยนับ, first Aha, ตัวชี้วัด ความครอบคลุม ขอบเขตรายจังหวัด รูปทรงประเภท แผนที่ focus/quiet, breadcrumb, แผงห้าโหมด, อาคาร, กราฟ, invariants INV01–INV24 |
-| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | [implementation-plan.json](implementation-plan.json) | โมดูล งาน P01–P10 acceptance AC01–AC27 backlog N01–N12 วิธีทำงานต่อ |
+| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | [implementation-plan.json](implementation-plan.json) | โมดูล งาน P01–P11 acceptance AC01–AC27 backlog N01–N12 วิธีทำงานต่อ |
 | [VERIFICATION.md](VERIFICATION.md) | `handoff-manifest.json` (ใน bundle) | ผลตรวจแยกระดับ (unit / LDS parity / rendered / live) และ hash ของทุกไฟล์ |
 | README นี้ | [handoff.schema.json](handoff.schema.json) | สัญญาโครงสร้างของ JSON (schema 1.5.0) |
 

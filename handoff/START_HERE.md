@@ -1,6 +1,6 @@
 # CityMETER Pharmacy — Developer Handoff
 
-รุ่นเผยแพร่ 0.1.0 · 23 ต.ค. 2569 · ทะเบียน ขย1 ข้อมูล ณ 28 พ.ค. 2569 · ตรวจแหล่ง 22 ต.ค. 2569
+รุ่นเผยแพร่ 0.1.1 · 23 ต.ค. 2569 · ทะเบียน ขย1 ข้อมูล ณ 28 พ.ค. 2569 · ตรวจแหล่ง 22 ต.ค. 2569
 
 เริ่มอ่าน `source/handoff/README.md` จากนั้น Product Statement (`source/PRODUCT_STATEMENT.md` + `source/handoff/product-statement.json`), Product Brief และ Implementation Plan ในโฟลเดอร์ `source/handoff` ทั้ง `.md` และ `.json` ใช้คู่กัน
 

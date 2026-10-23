@@ -62,6 +62,7 @@ const TITLES = {
   'toggle-neighborhoods': 'แสดงหรือซ่อนสีและขอบเขตแขวง/ตำบล',
   'mobile-panel': 'เปิดแผงข้อมูลและตัวกรอง',
   'open-help': 'เปิดวิธีใช้',
+  'open-help-sheet': 'เปิดวิธีใช้',
   'toggle-insights': 'เปิดหรือย่อกราฟเปรียบเทียบพื้นที่',
   'open-table': 'เปิดตารางร้านยาตามตัวกรอง',
   'toggle-table': 'ปิดตารางและกลับไปแผนที่',
@@ -99,17 +100,21 @@ function decorateNavigation() {
 }
 
 function installHelp() {
-  const dialog = document.getElementById('usage-help'), opener = document.getElementById('open-help'), close = document.getElementById('close-help');
-  if (!dialog || !opener || !close) return;
-  let returnFocus = opener;
-  opener.addEventListener('click', () => {
+  // Two openers: the map toolbar (desktop) and the information sheet (phone portrait, where six toolbar
+  // buttons do not fit in 330 px — live walk 2026-10-23).
+  const dialog = document.getElementById('usage-help'), close = document.getElementById('close-help');
+  const openers = ['open-help', 'open-help-sheet'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!dialog || !openers.length || !close) return;
+  const shown = el => el?.isConnected && el.getClientRects().length > 0;
+  let returnFocus = openers[0];
+  for (const opener of openers) opener.addEventListener('click', () => {
     returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : opener;
     if (!dialog.open) dialog.showModal();
     close.focus({preventScroll: true});
   });
   close.addEventListener('click', () => dialog.close());
   // Native dialog supplies modal focus containment and Escape/cancel behavior.
-  dialog.addEventListener('close', () => { const target = returnFocus?.isConnected ? returnFocus : opener; target.focus({preventScroll: true}); });
+  dialog.addEventListener('close', () => { const target = shown(returnFocus) ? returnFocus : openers.find(shown) || openers[0]; target.focus({preventScroll: true}); });
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
