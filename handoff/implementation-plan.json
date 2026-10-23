@@ -365,7 +365,7 @@
         "scripts/verify-live.mjs",
         "handoff/VERIFICATION.md"
       ],
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "P11",
@@ -389,7 +389,7 @@
         "index.html",
         "styles.css"
       ],
-      "status": "in_progress"
+      "status": "done"
     }
   ],
   "acceptanceCriteria": [
