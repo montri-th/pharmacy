@@ -1,0 +1,646 @@
+{
+  "$schema": "./handoff.schema.json",
+  "schemaVersion": "1.5.0",
+  "documentType": "implementation-plan",
+  "productId": "citymeter-pharmacy",
+  "productVersion": "0.1.0",
+  "updatedOn": "2026-10-23",
+  "brief": "product-brief.json",
+  "statement": "product-statement.json",
+  "humanPlan": "IMPLEMENTATION_PLAN.md",
+  "architecture": {
+    "runtime": "static HTML/CSS/JavaScript ES modules",
+    "framework": null,
+    "buildStep": null,
+    "nodeEngine": ">=20",
+    "commands": {
+      "start": "npm start",
+      "test": "npm test",
+      "ldsParity": "npm run check:lds -- --lds <LDS file>",
+      "handoffManifest": "npm run handoff:manifest",
+      "handoffBundle": "npm run handoff:bundle",
+      "verifyLive": "npm run verify:live"
+    },
+    "libraries": {
+      "maplibre": "5.6.2 (unpkg, pinned in js/vendors.js)",
+      "earcut": "3.2.4 (vendored, carried with the massing modules)"
+    },
+    "dataBuild": {
+      "python": "3.11+ with openpyxl",
+      "node": "mapshaper 0.6 for boundaries"
+    },
+    "externalServices": {
+      "tiles": {
+        "url": "https://tiles.openfreemap.org/planet",
+        "role": "basemap + city massing",
+        "offlineSubstitute": "Playwright harness with tiles blocked (no basemap) — confirm the look live"
+      },
+      "glyphs": {
+        "url": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf"
+      }
+    },
+    "coreDataTimeoutMs": 45000,
+    "frameTimeoutMs": 45000,
+    "modules": [
+      {
+        "path": "js/app.js",
+        "role": "orchestration: row scopes (scopeRows/baseRows/rows/building rows), counting unit and option counts, focus modes, panel modes and back stack (with the province), URL state, frames on demand (wantedProvinces, ensureFramesInView), map lifecycle and theme reinstall, camera calls (fitRecord with bbox fallback, fitMap, fitCountry), single map click priority (pin → building → province → area-hit), hover, neighbour labels (refreshLabelView), building join (refreshJoin/applyJoin), legend switch by zoom, counter/table sync"
+      },
+      {
+        "path": "js/frames.js",
+        "role": "per-province frame store (ensure/ensureMany, concurrency 2, versioned, failure not cached) and the province locator"
+      },
+      {
+        "path": "js/model.js",
+        "role": "decode data/pharmacies.json, provinces from the index (setProvinces), unitWords, filterRows (unit + filters), summarize, mixOf, EVIDENCE labels, productionLink"
+      },
+      {
+        "path": "js/areas.js",
+        "role": "area index (no geometry), attachFrames, level words, summarizeAreas/Districts, combinedDensity (Σ/Σ), recordBounds (outline or bbox), areaLocator for label anchors only (never membership)"
+      },
+      {
+        "path": "js/area-insight.js",
+        "role": "first Aha (≥ 30 rows, density, leading province, province benchmark, outside finding, count mode in the province with the most placed rows) and filterAreaRows"
+      },
+      {
+        "path": "js/scales.js",
+        "role": "density.area / count LUTs (41 samples), classColors, geometricBreaks, buildDensityClasses, buildCountClasses, classify (EVID-05), inkFor, contrastRatio"
+      },
+      {
+        "path": "js/cues.js",
+        "role": "group id → LDS series + shape cue; QUALITY_SERIES; cueMarkup (SVG) and cueImage (map icon)"
+      },
+      {
+        "path": "js/map-layers.js",
+        "role": "แขวง/ตำบล choropleth on the merged frames (setFrames re-applies feature-state), area-hit and hover, hatch image, district outlines, buildAreaModel, HTML label chips with collision"
+      },
+      {
+        "path": "js/provinces.js",
+        "role": "province frames (count) below zoom 8, outlines, selection; buildProvinceModel"
+      },
+      {
+        "path": "js/pins.js",
+        "role": "focus cue symbol layer over grey context circles (rows with a point; sent on filter change only, never click targets), selection ring, HTML pins from zoom 15.5 with keyboard tour and co-located slots"
+      },
+      {
+        "path": "js/building-join.js",
+        "role": "display-time join: published points × focus-tier footprints (smallest containing)"
+      },
+      {
+        "path": "js/massing.js · js/geometry.js · js/mvt.js",
+        "role": "quiet city massing + rounded focus massing from OpenFreeMap tiles; stable focus ids, original footprints for the join, venue tier for the open building, hitTest (carried over unchanged)"
+      },
+      {
+        "path": "js/map-style.js · js/camera.js · js/vendors.js",
+        "role": "generated paper basemap, camera presets and fitting, pinned MapLibre loader (carried over unchanged)"
+      },
+      {
+        "path": "js/breadcrumb.js",
+        "role": "ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล with production deep links (no dataset parameter); folding"
+      },
+      {
+        "path": "js/profile-model.js",
+        "role": "overview, district (unplaced rows), area, building and store view models; listOrder (chains first, then name, Thai collation)"
+      },
+      {
+        "path": "js/panel.js",
+        "role": "panel HTML (pure), metric tiles, rankings (eligible ranked, others unranked), empty selections, provenance() with the unit"
+      },
+      {
+        "path": "js/chart-model.js · js/charts.js",
+        "role": "density bars / group matrix / quality share bars as HTML, no chart vendor"
+      },
+      {
+        "path": "js/navigation.js · js/launch.js",
+        "role": "nav-7 glyphs and help dialog; launch/slow/error overlay and file:// bridge"
+      },
+      {
+        "path": "scripts/build-boundaries.py",
+        "role": "production base info + geometry responses + receipts → area index, per-province frames, provinces (mapshaper)"
+      },
+      {
+        "path": "scripts/build-data.py",
+        "role": "research sheet → pharmacies.json (admin matching, counting unit, privacy exclusions, coverage cross-check)"
+      },
+      {
+        "path": "scripts/check-lds-parity.mjs",
+        "role": "LDS parity against the source file (not in the repository)"
+      },
+      {
+        "path": "scripts/build-handoff.mjs · scripts/verify-live.mjs",
+        "role": "manifest/bundle from git ls-files; live byte attestation"
+      }
+    ]
+  },
+  "selection": {
+    "filterFields": [
+      "search",
+      "group",
+      "quality",
+      "province",
+      "brand",
+      "count"
+    ],
+    "queryFields": [
+      "search",
+      "group",
+      "quality",
+      "province",
+      "brand",
+      "count",
+      "district",
+      "area",
+      "areas",
+      "view",
+      "store",
+      "view3d"
+    ],
+    "rowScopes": {
+      "scopeRows": "filters + counting unit",
+      "baseRows": "scopeRows ∩ selected district or area",
+      "rows": "baseRows ∩ area focus",
+      "buildingRows": "scopeRows whose published point falls in the open building"
+    },
+    "panelActions": [
+      "select-area",
+      "select-district",
+      "select-store",
+      "select-building",
+      "select-province",
+      "filter-brand",
+      "set-count",
+      "back",
+      "explore-top",
+      "clear-focus",
+      "open-charts",
+      "open-table",
+      "clear-filter",
+      "leave-area",
+      "crumb-country",
+      "crumb-province",
+      "crumb-district",
+      "crumb-area",
+      "crumb-expand"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "P01",
+      "title": "Obtain the research sheet of record (xlsx via the owner’s browser) and record its hash",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "AC23"
+      ],
+      "files": [
+        "(internal) pharmacy-master.xlsx"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P02",
+      "title": "Fetch production base info and boundaries with receipts; build the area index, per-province frames and provinces",
+      "dependsOn": [
+        "P01"
+      ],
+      "acceptanceCriteria": [
+        "AC23",
+        "AC13"
+      ],
+      "files": [
+        "scripts/build-boundaries.py",
+        "data/area-index.json",
+        "data/frames/",
+        "data/provinces.geojson",
+        "data/boundary-receipts.json"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P03",
+      "title": "Build pharmacies.json: admin matching, counting unit, privacy exclusions, coverage cross-check",
+      "dependsOn": [
+        "P01",
+        "P02"
+      ],
+      "acceptanceCriteria": [
+        "AC23",
+        "AC06",
+        "AC07"
+      ],
+      "files": [
+        "scripts/build-data.py",
+        "data/pharmacies.json"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P04",
+      "title": "Area index, frame store and national area layers",
+      "dependsOn": [
+        "P02"
+      ],
+      "acceptanceCriteria": [
+        "AC13",
+        "AC12"
+      ],
+      "files": [
+        "js/areas.js",
+        "js/frames.js",
+        "js/map-layers.js",
+        "js/provinces.js"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P05",
+      "title": "First Aha with the leading province, benchmark, outside finding and count mode",
+      "dependsOn": [
+        "P03"
+      ],
+      "acceptanceCriteria": [
+        "AC02",
+        "AC05"
+      ],
+      "files": [
+        "js/area-insight.js"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P06",
+      "title": "Panel views, provenance and unit words",
+      "dependsOn": [
+        "P03"
+      ],
+      "acceptanceCriteria": [
+        "AC06",
+        "AC07",
+        "AC08",
+        "AC09",
+        "AC10",
+        "AC27"
+      ],
+      "files": [
+        "js/model.js",
+        "js/profile-model.js",
+        "js/panel.js",
+        "js/breadcrumb.js"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P07",
+      "title": "Map: choropleth, province frames, pins, massing, building join, camera, labels",
+      "dependsOn": [
+        "P04"
+      ],
+      "acceptanceCriteria": [
+        "AC03",
+        "AC04",
+        "AC16",
+        "AC17",
+        "AC18",
+        "AC26"
+      ],
+      "files": [
+        "js/app.js",
+        "js/pins.js",
+        "js/building-join.js",
+        "js/cues.js",
+        "js/scales.js"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P08",
+      "title": "Charts and table",
+      "dependsOn": [
+        "P05"
+      ],
+      "acceptanceCriteria": [
+        "AC14",
+        "AC15"
+      ],
+      "files": [
+        "js/chart-model.js",
+        "js/charts.js",
+        "js/app.js"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P09",
+      "title": "Tests, LDS parity, docs and handoff",
+      "dependsOn": [
+        "P05",
+        "P06",
+        "P07",
+        "P08"
+      ],
+      "acceptanceCriteria": [
+        "AC23",
+        "AC24"
+      ],
+      "files": [
+        "tests/",
+        "scripts/check-lds-parity.mjs",
+        "handoff/",
+        "DATA_METHOD.md",
+        "PRODUCT_STATEMENT.md"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "P10",
+      "title": "Publish on GitHub Pages and verify the live release",
+      "dependsOn": [
+        "P09"
+      ],
+      "acceptanceCriteria": [
+        "AC25",
+        "AC19",
+        "AC20"
+      ],
+      "files": [
+        "scripts/verify-live.mjs",
+        "handoff/VERIFICATION.md"
+      ],
+      "status": "done"
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC01",
+      "scenario": "HTTP/HTTPS first load",
+      "expected": "Data and panel ready before the map; citymeter:ready dismisses the launch overlay; no console error",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC02",
+      "scenario": "Default first Aha",
+      "expected": "Panel shows 14.5 ร้าน/ตร.กม. for ดินแดง · คลองเตยเหนือ · ลุมพินี (145 ร้าน, 10 ตร.กม.), ทั้งกรุงเทพมหานคร 2.1, the outside finding ตำบลหมากแข้ง อุดรธานี 11.7, the unit and the 30-row rule and two actions; values computed, not constants",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC03",
+      "scenario": "First paint in 3D",
+      "expected": "city preset (pitch 56) framing the three focused แขวง; fills, ink labels and cue symbols only there; the rest quiet",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC04",
+      "scenario": "ดูทุกพื้นที่",
+      "expected": "?areas=all; every frame of the loaded provinces filled; numbers unchanged; button becomes โฟกัส 3 แขวงนี้",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC05",
+      "scenario": "Filter change",
+      "expected": "Aha, focus, choropleth, charts and counters recompute; small selections switch to the count Aha in the province with the most placed rows and say so",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC06",
+      "scenario": "Counting unit",
+      "expected": "Default counts 18,136 licensed rows; หน่วยนับ ทุกรายการ (?count=all) counts 23,246 and every word becomes รายการ; a chip names the unit; option counts follow the unit",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC07",
+      "scenario": "Zero and unplaced",
+      "expected": "an area without a licensed row shows 0 with the zero outline and the register date; rows placed only at district/province level are counted there and never painted",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC08",
+      "scenario": "Area profile",
+      "expected": "แขวง/ตำบล panel: count, density, quality list, points x/y, group bars, quality bar, chains, list; rank or “not ranked” below 30; production link /S/",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC09",
+      "scenario": "District profile",
+      "expected": "เขต/อำเภอ panel with its areas ranked and the unplaced rows noted; production link /D/",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC10",
+      "scenario": "Store detail",
+      "expected": "chain (or ยังไม่ยืนยัน), licence and register date, quality list with no validity dates, area + matching method, point + role or “ไม่เผยแพร่พิกัด”, source page, other rows of the chain in the area labelled อาจเป็นร้านเดียวกัน",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC11",
+      "scenario": "Breadcrumb",
+      "expected": "ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล with production codes; folding on 390 px; crumbs navigate",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC12",
+      "scenario": "Country view",
+      "expected": "ทั้งประเทศ shows 77 province frames filled by count with chips; clicking one drills into the จังหวัด filter; legend switches with zoom",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC13",
+      "scenario": "Frames on demand",
+      "expected": "only the needed provinces load (Aha province at start); zooming to subdistrict level loads the provinces under the map; a failed load does not break panels and retries",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC14",
+      "scenario": "Charts",
+      "expected": "density · group matrix · quality share; every mark opens its area; roving tabs",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC15",
+      "scenario": "Table",
+      "expected": "chains first then name; licence, quality, area (or district/province level), point; paging; a row opens the store",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC16",
+      "scenario": "Detail zoom",
+      "expected": "from zoom 15.5 HTML pins with keyboard tour; context dots never focusable",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC17",
+      "scenario": "Buildings",
+      "expected": "a focus building with one point opens the store, several open the building panel; the open building is drawn in map.activeLayer; copy จุดตกในอาคาร",
+      "verificationType": "browser (live tiles)",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC18",
+      "scenario": "Neighbour moves",
+      "expected": "clicking another แขวง/ตำบล or its chip moves there; a click inside the selected one changes nothing; another province moves the filter",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC19",
+      "scenario": "Themes",
+      "expected": "Auto/Light/Dark; analytical colours identical; basemap re-themed; no colour approximated",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC20",
+      "scenario": "Mobile portrait 390 px",
+      "expected": "map first with the compact Aha card; bottom sheet ≤ 64dvh with sticky close; Thai readable; no horizontal scroll",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC21",
+      "scenario": "Map failure",
+      "expected": "MapLibre or tiles unavailable → failure card with retry; Aha, panel, charts, table work",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC22",
+      "scenario": "URL state",
+      "expected": "search, group, quality, province, brand, count, district, area, areas, view, store, view3d round-trip",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC23",
+      "scenario": "Data integrity",
+      "expected": "row counts reconcile with meta.counts and rowsByProvince; licences unique; membership consistent; coverage check equal for 77 provinces; receipts hash",
+      "verificationType": "unit",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC24",
+      "scenario": "LDS parity",
+      "expected": "130 checks against the LDS source file pass",
+      "verificationType": "script",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC25",
+      "scenario": "Live release",
+      "expected": "GitHub Pages serves the committed bytes (npm run verify:live); walked in Chrome at desktop and 390 px in both themes",
+      "verificationType": "live",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC26",
+      "scenario": "Attribution and overlays",
+      "expected": "attribution readable above the tray in both themes; legend and phone Aha card above it",
+      "verificationType": "browser",
+      "result": "see VERIFICATION.md"
+    },
+    {
+      "id": "AC27",
+      "scenario": "Empty selections",
+      "expected": "a chain with 0 licensed rows shows the empty Aha with นับทุกรายการ; an empty area offers the areas where the filters match",
+      "verificationType": "unit + browser",
+      "result": "see VERIFICATION.md"
+    }
+  ],
+  "developerWorkflow": [
+    "Read AGENTS.md, then handoff/README.md, PRODUCT_STATEMENT.md and the paired human/machine briefs",
+    "Run npm test before changes; keep the row scopes, counting unit, focus modes, metric, frames and coverage contracts and the panel action contract",
+    "Change one bounded task at a time; preserve invariant IDs INV01–INV24",
+    "Validate calculations with the real data in tests/ (tests/helpers.js loads it once)",
+    "Review rendered Thai at 390 px and desktop in both themes; when tiles are blocked use the local harness for layout, then confirm the real-tile look live",
+    "Tune camera and layers live via window.__citymeter in the console before changing constants",
+    "Publish only authorised changes; wait for the Pages run; run npm run verify:live before reporting a release",
+    "Regenerate the manifest and bundle from a clean working tree; never hand-edit hashes"
+  ],
+  "backlog": [
+    {
+      "id": "N01",
+      "title": "Scheduled refresh of the ขย1 register with a diff report (licences added/removed per แขวง/ตำบล) and a dated archive",
+      "ownerRole": "data engineer",
+      "status": "backlog"
+    },
+    {
+      "id": "N02",
+      "title": "Check the terms of use of each source (FDA open data licence, Pharmacy Council directory, chain pages) before any commercial or production use; record the decision",
+      "ownerRole": "owner / legal",
+      "status": "backlog"
+    },
+    {
+      "id": "N03",
+      "title": "Pharmacies per 1,000 residents with CityMETER Population on the same frames (new metric contract; never mixed with per-km²)",
+      "ownerRole": "analyst",
+      "status": "backlog"
+    },
+    {
+      "id": "N04",
+      "title": "Resolve the 1,221 cross-source identity pairs and attach licences to directory/chain rows with evidence",
+      "ownerRole": "research",
+      "status": "backlog"
+    },
+    {
+      "id": "N05",
+      "title": "ขย2 premises (1,215) after the format review — a separate, labelled unit, never added to ขย1",
+      "ownerRole": "research",
+      "status": "backlog"
+    },
+    {
+      "id": "N06",
+      "title": "Owner-authorised geocoding of licensed premises with precision labels (until then no invented points)",
+      "ownerRole": "data engineer",
+      "status": "backlog"
+    },
+    {
+      "id": "N07",
+      "title": "Field verification sample to calibrate “คงอยู่” in the register against open-today",
+      "ownerRole": "research",
+      "status": "backlog"
+    },
+    {
+      "id": "N08",
+      "title": "Chain logos with a registry (original bytes, sha256, role caption) — none collected in this round",
+      "ownerRole": "design",
+      "status": "backlog"
+    },
+    {
+      "id": "N09",
+      "title": "Playwright regression in CI with stub tiles and the pinned MapLibre package",
+      "ownerRole": "developer",
+      "status": "backlog"
+    },
+    {
+      "id": "N10",
+      "title": "Pharmacy dataset in CityMETER production (?d=pharmacy) and deep links with the dataset parameter",
+      "ownerRole": "developer",
+      "status": "backlog"
+    },
+    {
+      "id": "N11",
+      "title": "Vector tiles (e.g. PMTiles) for the national subdistrict outlines to replace per-province GeoJSON when many provinces are browsed",
+      "ownerRole": "developer",
+      "status": "backlog"
+    },
+    {
+      "id": "N12",
+      "title": "Quality-list validity dates once the Pharmacy Council publishes them",
+      "ownerRole": "research",
+      "status": "backlog"
+    }
+  ]
+}

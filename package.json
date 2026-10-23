@@ -1,0 +1,20 @@
+{
+  "name": "citymeter-pharmacy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CityMETER · Pharmacy — subdistrict-first 3D map of licensed pharmacy density, store types, chains and the Pharmacy Council quality list across Thailand",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "python3 -m http.server 4173 --bind 127.0.0.1",
+    "build:boundaries": "python3 -I scripts/build-boundaries.py --help",
+    "build:data": "python3 -I scripts/build-data.py --help",
+    "check:lds": "node scripts/check-lds-parity.mjs",
+    "handoff:manifest": "node scripts/build-handoff.mjs",
+    "handoff:bundle": "node scripts/build-handoff.mjs --zip dist/CityMETER-Pharmacy-Developer-Handoff.zip",
+    "verify:live": "node scripts/verify-live.mjs"
+  }
+}

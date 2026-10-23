@@ -1,0 +1,73 @@
+{
+  "artifact": "CityMETER Pharmacy — 3D-first, subdistrict-first density map of licensed pharmacies across Thailand",
+  "productVersion": "0.1.0",
+  "updatedOn": "2026-10-23",
+  "ldsVersion": "0.9.7",
+  "release": "v0.9.7-owner.1",
+  "revision": "standalone-0.9.7-r1",
+  "colorSetId": "color-srgb-10",
+  "baseDocumentSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
+  "locationIntelligenceProfile": "not applied — licensed premises in a register are not a supply-capacity, demand, access or market measure; the product uses base analytical families only",
+  "layoutReference": "https://landometer.com/v3/citymeter",
+  "fontRoles": {
+    "body": "Bai Jamjuree 400/600",
+    "thaiHeadings": "IBM Plex Sans Thai Looped 700",
+    "latinHeadings": "Arvo 700",
+    "dataAndMetrics": "JetBrains Mono 400; tabular numerals; normal tracking",
+    "navigation": "Material Symbols Rounded approved nav-7 subset; FILL 0 / wght 300 / GRAD 0 / opsz 24",
+    "pictograms": "Material Symbols Rounded 8-glyph pictogram subset reused byte-for-byte from Luxury Brands 0.5 (owner test exception 2026-10-22)"
+  },
+  "colors": {
+    "applied": "assets/theme.css — foundation pairs, semantic states, map roles, dataState (noData, zero), categorical series 1–10 (landometer-series-10-v8 soft fill + ink), count classes (province swatches), basemap-only tokens",
+    "analytical": "js/scales.js — density.area (scaleVersion 554812a7c19107b3a9b8658ba541fc8e13519cb19708e885a425f32d5b30f101), count (4ff5c1fb4be71ecd13c48685b38371b528bcd4ce369ce964a75354c2eb4d0980); exact 41-sample LUTs; identical HEX on both themes; geometric 1–2–5 classes declared by this consumer (DATAVIZ-02)",
+    "categorical": "js/cues.js — pharmacy group id → series (chain 7 hexagon, health_beauty 1 circle, regional 3 triangle, public 4 diamond, independent 8 ring); quality list series 10 (plus); no star",
+    "reportedDifference": "LDS analytical scale records list dark noData #3B4849 / zeroOutline #BAC6C0, while machine.tokens.dataState (referenced by the EVID-05 treatments) lists dark #404844 / #93A398; the map follows the EVID-05 treatment (dataState), as in Restaurants 0.2.1, and the difference stays reported to the owner",
+    "parity": "scripts/check-lds-parity.mjs against the LDS source file: 130 checks (handoff/VERIFICATION.md)",
+    "notDistributed": "full LDS library, other analytical families, Location Intelligence profile scales"
+  },
+  "firstAha": "combined licensed pharmacies per km² of up to three densest แขวง/ตำบล (≥ 30 rows) of the leading province, against that province (its rows ÷ its km²), plus the densest eligible area outside it; computed per selection; the map opens in the 3D city preset with those areas focused automatically and the rest quiet",
+  "countingUnit": "default: licensed rows (one ขย1 licence = one premises, unique numbers); optional every row (“รายการ”, may repeat a storefront) — the words follow the unit everywhere",
+  "focusAndQuiet": {
+    "implementation": "app.js focus modes (auto/explicit/none) and row scopes (scopeRows/baseRows/rows); map-layers.js filled/quiet feature-state; pins.js cue symbols vs grey context dots; massing.js quiet city tier vs rounded focus tier; camera.js presets; provinces.js frames below zoom 8"
+  },
+  "geometryAndMetricContract": "one row per symbol, only rows with a published source point; membership = production codes matched from the row's own administrative names (row.admin); density = rows ÷ production km²; combined density Σ/Σ; outlines per province on demand",
+  "accessibility": [
+    "native form labels and disclosure",
+    "visible focus on every control including pins, area labels and chart marks",
+    "keyboard pin tour (arrow keys) at detail zoom, excluding quiet context dots",
+    "roving tablist for the chart views",
+    "reduced motion respected",
+    "table equivalent for every map view",
+    "categorical shape cues beside colour; text labels in every legend and list",
+    "empty, map-failure, frame-failure and load-error paths with actions",
+    "Thai labels for the map's own controls (MapLibre locale)"
+  ],
+  "validation": {
+    "status": "release 0.1.0 verification recorded in handoff/VERIFICATION.md",
+    "renderedHarness": "Playwright + MapLibre 5.6.2 from the npm package, OpenFreeMap blocked in the build container (no basemap or massing there); 1440×900 and 390×844, light and dark; the live site was walked in Chrome with the real basemap",
+    "scope": "Applied LDS values, fonts and actual rendered interfaces. No blanket LDS, CVD, native-device or market-completeness claim."
+  },
+  "layoutContract": {
+    "headerPx": 48,
+    "readingPanelWidth": "min(max(300px, 28%), 440px)",
+    "map": "full remaining viewport below header",
+    "chartTray": "collapsible bottom overlay, 52 px collapsed, 360 px / ≤58% open",
+    "mobilePortrait": "full map, bottom sheet ≤ 64dvh with sticky close, compact Aha card on the map while the sheet is closed, only focus labels on the map"
+  },
+  "mapContract": {
+    "basemap": "generated at runtime by js/map-style.js on https://tiles.openfreemap.org/planet with --basemap-* tokens; no hosted style URL",
+    "choropleth": "density.area, five geometric 1–2–5 classes over (0, observed max], [lower, upper) with the last closed; opacity 1 beneath the basemap's first line layer; zoom 8–14.5; EVID-05 measured / measured_zero (lowest class + 2 px zero outline); no_data treatment kept but unused (the register covers the country)",
+    "provinces": "count family per province frame below zoom 8, outlines to zoom 12, ink-chip labels to zoom 9, panel list; drill-down into the จังหวัด filter",
+    "frames": "data/area-index.json (every area, no geometry) + data/frames/{CODE}.json per province, loaded for the selection and for ≤ 6 provinces under the map at subdistrict zoom",
+    "symbols": "focus rows with a published point as cue icons (series fill + shape, marker-stroke outline) in a symbol layer, never clustered; context rows as grey circles; HTML pins from zoom 15.5 (≤ 320 pins); no logos",
+    "buildings": "published points × focus-tier OSM footprints (display-time join); the open building, or the building of the open store, in map.activeLayer",
+    "labels": "ink chips for the focus/selection from zoom 8, light chips for the rest from zoom 11 (≤ 12 desktop, none on a phone in focus mode); swatch = the area's class colour; value = ร้าน/ตร.กม.",
+    "breadcrumb": "ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล with production codes and /D/ /S/ deep links (no dataset parameter); store is the heading"
+  },
+  "chartContract": {
+    "density": "sorted bars, density class colour, value beside the bar, province under the name nationally; count bars when no area reaches the eligibility threshold",
+    "matrix": "table-layout fixed with a colgroup; every cell the same size; cell tint = count class; column headers carry the series cue",
+    "quality": "part-of-whole bar of the area's rows on the Pharmacy Council quality list (series 10 + plus cue), listed/total beside it"
+  },
+  "copy": "short natural Thai: ร้านยา / ร้าน / รายการ / เครือร้าน / ร้านยาคุณภาพ / แขวง·ตำบล / เขต·อำเภอ; units on every number; provenance line (dataset · source · date · boundary · what one unit is) at the end of every panel view"
+}

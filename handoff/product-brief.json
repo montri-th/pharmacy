@@ -1,0 +1,814 @@
+{
+  "$schema": "./handoff.schema.json",
+  "schemaVersion": "1.5.0",
+  "documentType": "product-brief",
+  "productId": "citymeter-pharmacy",
+  "productVersion": "0.1.0",
+  "updatedOn": "2026-10-23",
+  "datasetCheckedOn": "2026-10-22",
+  "registerAsOf": "2026-05-28",
+  "language": "th",
+  "productName": "CityMETER · Pharmacy",
+  "repository": "https://github.com/montri-th/pharmacy",
+  "liveUrl": "https://montri-th.github.io/pharmacy/",
+  "productStatement": {
+    "human": "../PRODUCT_STATEMENT.md",
+    "machine": "product-statement.json",
+    "question": "ร้านยาแน่นที่สุดอยู่ตรงไหน และเป็นร้านแบบไหน"
+  },
+  "job": "Screen and compare แขวง/ตำบล across Thailand by licensed-pharmacy density, store group, chains and the quality list before a location or territory decision, counting each licence once, with dataset · source · date · boundary on every number",
+  "audiences": [
+    {
+      "id": "chain-expansion",
+      "label": "ทีมขยายสาขาของเครือร้านยาและร้านสุขภาพ/ความงาม",
+      "evidence": "hypothesis"
+    },
+    {
+      "id": "pharma-sales",
+      "label": "ทีมขายและวางเขตของผู้ผลิต/ผู้จัดจำหน่ายยาและเวชภัณฑ์",
+      "evidence": "hypothesis"
+    },
+    {
+      "id": "analyst",
+      "label": "นักวิเคราะห์ ที่ปรึกษา และหน่วยงานท้องถิ่น",
+      "evidence": "hypothesis"
+    }
+  ],
+  "journey": [
+    "3D first Aha (three densest แขวง of the leading province focused; benchmark the province; densest area outside it)",
+    "แขวง/ตำบล profile (groups, quality list, chains, list of pharmacies)",
+    "เขต/อำเภอ profile (incl. rows placed only at district level)",
+    "store detail (chain, licence, quality list, area and matching method, published point and role, source)",
+    "click a building in the focus (store · ร้านยาที่จุดตกในอาคารนี้)",
+    "click the next แขวง/ตำบล on the map (or its label) to move there",
+    "compare areas (density · group · quality list) and table",
+    "zoom out to the country: province frames by count; click to drill down",
+    "open the same area in CityMETER production"
+  ],
+  "changesSince": {
+    "base": "CityMETER Restaurants 0.2.1 (same camera, basemap, massing, pictogram, breadcrumb and handoff contracts) and Luxury Brands 0.5",
+    "new": [
+      "national scale: area index without geometry + per-province frames on demand",
+      "counting unit contract (licensed rows by default, every row optional, words follow the unit)",
+      "membership matched from administrative names at build time (row.admin recorded)",
+      "leading-province Aha with a province benchmark and the densest area outside it",
+      "geometric 1–2–5 classes for density and counts",
+      "measured zero from a national register (no no_data)",
+      "sparse published points (17%): areas never depend on pins",
+      "no venues, no logos, no x-ray (not collected in this research round)"
+    ]
+  },
+  "rowScopes": {
+    "scopeRows": {
+      "definition": "rows after search/group/quality/province/brand filters and the counting unit, before any area selection or area focus",
+      "consumers": [
+        "first Aha (no district selected)",
+        "choropleth",
+        "charts",
+        "area/district/store profiles (ranks keep the whole selection as reference)",
+        "quiet context dots (rows with a point)",
+        "building join",
+        "province frames (without the province filter)"
+      ]
+    },
+    "baseRows": {
+      "definition": "scopeRows narrowed by the selected เขต/อำเภอ or แขวง/ตำบล",
+      "consumers": [
+        "first Aha when a district is selected",
+        "counters and table when an area/district is selected"
+      ]
+    },
+    "rows": {
+      "definition": "baseRows narrowed by the area focus (auto top-3 of the leading province, explicit ?areas=, or none with ?areas=all)",
+      "consumers": [
+        "focused cue symbols",
+        "counters (labelled ในโฟกัส when narrowed)",
+        "table",
+        "focus massing regions"
+      ]
+    },
+    "buildingRows": {
+      "definition": "scopeRows whose published point falls inside the open building footprint (js/building-join.js#containsPoint); recomputed when the filters change",
+      "consumers": [
+        "cue symbols with detail",
+        "counter and table",
+        "building panel"
+      ]
+    },
+    "focusModes": {
+      "auto": {
+        "default": true,
+        "focusIds": "summarizeAreaInsight(...).areaIds (≤ 3, one province) when no area/district is selected",
+        "url": "no areas parameter"
+      },
+      "explicit": {
+        "focusIds": "user-chosen subdistrict codes (≤ 3)",
+        "url": "?areas=102601,103901"
+      },
+      "none": {
+        "focusIds": "[]",
+        "url": "?areas=all"
+      }
+    }
+  },
+  "firstAha": {
+    "scope": "scopeRows, or baseRows when a เขต/อำเภอ is selected",
+    "ranking": "แขวง/ตำบล with ≥ 30 rows (MIN_AREA_ROWS), by rows per km² of the production area, then rows, then code; the leader’s province is the home; up to three best-ranked areas of the home",
+    "headlineTemplate": "{density} {ร้าน|รายการ}/ตร.กม. — ร้านยาแน่นที่สุดใน {areaCount} {แขวง|ตำบล|พื้นที่}นี้",
+    "numerator": "rows in the focused areas (matched membership)",
+    "denominator": "sum of their production km² (Σrows ÷ Σkm², never an average of ratios)",
+    "baseline": "rows of the home province in the selection ÷ the province’s production km²",
+    "secondaryFinding": "the best-ranked area outside the home province (hidden with a province filter)",
+    "eligibilityCopy": "นับร้านที่มีใบอนุญาต ขย1 ในทะเบียน อย. · จัดอันดับเฉพาะพื้นที่ที่มีอย่างน้อย 30 ร้าน",
+    "defaultFocus": "auto",
+    "defaultCamera": "city preset, fitPitched over the focused areas (outline vertices when loaded, bbox corners before)",
+    "action": "ดูทุกพื้นที่ (?areas=all); เปรียบเทียบพื้นที่ (opens charts); area names are links",
+    "explicitAction": "โฟกัส {areaCount} {แขวง|ตำบล}นี้ (when focus mode is none)",
+    "model": "js/area-insight.js#summarizeAreaInsight",
+    "filter": "js/area-insight.js#filterAreaRows",
+    "defaultSnapshot": {
+      "asOf": "2026-10-22",
+      "registerAsOf": "2026-05-28",
+      "unit": "licensed",
+      "home": "BKK",
+      "areaIds": [
+        "102601",
+        "103901",
+        "100704"
+      ],
+      "names": [
+        "ดินแดง",
+        "คลองเตยเหนือ",
+        "ลุมพินี"
+      ],
+      "rows": [
+        75,
+        36,
+        34
+      ],
+      "km2": 10.01,
+      "density": 14.48,
+      "homeRows": 3232,
+      "homeKm2": 1571.4,
+      "baselineDensity": 2.057,
+      "outside": {
+        "id": "410101",
+        "name": "หมากแข้ง",
+        "province": "UDN",
+        "rows": 122,
+        "density": 11.72
+      },
+      "everyRow": {
+        "names": [
+          "สุริยวงศ์",
+          "ถนนพญาไท",
+          "สีลม"
+        ],
+        "rows": 101,
+        "density": 30.17
+      },
+      "status": "regression fixture — never a UI constant"
+    },
+    "fallbacks": {
+      "noRows": "ไม่พบร้านตามตัวกรองนี้ + นับทุกรายการ (licensed unit) + ล้างตัวกรอง",
+      "smallSelection": "fewer than 1,000 rows or fewer than 3 eligible areas → count mode in the province holding the most placed rows: {share}% ของ{ร้าน|รายการ}ตามตัวกรองอยู่ใน 3 พื้นที่นี้",
+      "unplaced": "no row placed at subdistrict level → “ยังระบุตำบลไม่ได้”",
+      "mapUnavailable": "Aha, panel, charts and table stay usable; map failure card with retry"
+    }
+  },
+  "countingUnitContract": {
+    "default": {
+      "id": "licensed",
+      "rows": 18136,
+      "rule": "rows with a ขย1 licence number of the FDA register snapshot; licence numbers are unique, so one licence = one premises",
+      "words": "ร้าน · ร้าน/ตร.กม."
+    },
+    "alternatives": [
+      {
+        "id": "all",
+        "url": "?count=all",
+        "rows": 23246,
+        "rule": "every row of 02_STORES (licensed + directory 3,384 + chain source 1,726); a storefront may appear more than once (1,221 cross-source pairs await identity review)",
+        "words": "รายการ · รายการ/ตร.กม."
+      }
+    ],
+    "words": "js/model.js#unitWords(mode) → {one, density, densityLong, subject}; every label, legend, chart, panel and announcement uses it",
+    "rule": "never mix units in one number; switching the unit recomputes the Aha, the classes and the focus; a row from another source opened from a list switches the unit to all (it is only in scope there)"
+  },
+  "metricContract": {
+    "areas": {
+      "family": "density.area",
+      "unit": "ร้าน/ตร.กม. (รายการ/ตร.กม. in the all unit)",
+      "formula": "rows ÷ (areaSqm / 1e6) of the production frame",
+      "classes": "five geometric 1–2–5 classes over (0, observed max]: top break = largest ladder value ≤ max/3, each lower break = largest ladder value ≤ next/3; [lower, upper) with the last closed at the max; fewer classes when the range is narrow (evenly spread LDS class colours)"
+    },
+    "provinces": {
+      "family": "count",
+      "unit": "ร้าน",
+      "reason": "the country view answers how many; a per-km² province value is dominated by forest and farmland",
+      "classes": "geometric integer classes 1–9, 10–49, 50–199, 200–999, 1,000–max (default)"
+    },
+    "matrix": {
+      "family": "count",
+      "unit": "ร้าน",
+      "cells": "rows per area × store group"
+    },
+    "quality": {
+      "family": "categorical series 10 (plus cue)",
+      "metric": "share of the area’s rows on the Pharmacy Council quality list (no validity dates)"
+    },
+    "eligibility": {
+      "minRows": 30,
+      "smallSelection": 1000,
+      "rationale": "a density on a handful of rows is not a finding (random error ≈ 1/√n)"
+    },
+    "combined": "Σrows ÷ Σkm² for any set of areas"
+  },
+  "coverageContract": {
+    "covered": "the ขย1 register covers all 77 provinces; every frame is covered",
+    "states": {
+      "measured": "class fill",
+      "measured_zero": "no row under the filter — lowest class fill + 2 px dataState.zero outline; panel copy says “0 ตามแหล่งข้อมูล” with the register date (licensed unit) and offers the areas where the same filters match",
+      "no_data": "treatment kept (135° hatch on dataState.noData + border.emphasis) for uncovered frames; unused in this release",
+      "out_of_scope": "does not occur"
+    },
+    "unplaced": "rows matched only to a district (74 licensed) or province (9 licensed) are counted there and never painted into a subdistrict; district and area panels say how many",
+    "points": "a row without a published point has no pin and still counts in its area; panels show “มีพิกัดจากแหล่ง x/y”",
+    "legend": "density classes + 0 (when present); province count classes at country zoom"
+  },
+  "categoricalCueContract": {
+    "registry": "landometer-series-10-v8 (soft fill + ink per theme from assets/theme.css)",
+    "bindBy": "store group id (js/cues.js#GROUP_SERIES), stable through filtering and sorting",
+    "groups": {
+      "chain": {
+        "series": 7,
+        "cue": "hexagon",
+        "th": "เครือร้านยา"
+      },
+      "health_beauty": {
+        "series": 1,
+        "cue": "circle",
+        "th": "ร้านสุขภาพและความงาม"
+      },
+      "regional": {
+        "series": 3,
+        "cue": "triangle",
+        "th": "เครือภูมิภาค/ท้องถิ่น"
+      },
+      "public": {
+        "series": 4,
+        "cue": "diamond",
+        "th": "ร้านยาของรัฐและสถาบัน"
+      },
+      "independent": {
+        "series": 8,
+        "cue": "ring",
+        "th": "ร้านยาท้องถิ่น/ยังไม่ยืนยันเครือ"
+      }
+    },
+    "attributes": {
+      "quality": {
+        "series": 10,
+        "cue": "plus",
+        "th": "อยู่ในรายชื่อร้านยาคุณภาพ"
+      }
+    },
+    "uses": [
+      "map symbol layer (cue icon = series fill + shape, marker-stroke outline)",
+      "HTML pins at detail zoom",
+      "legend “ประเภทร้าน (สีและรูปทรง)”",
+      "group bars in profiles",
+      "matrix column headers",
+      "store eyebrow",
+      "table rows",
+      "chain chips"
+    ],
+    "rationale": "the dominant independent group (≈ 92% of licensed rows) takes the open ring so chains read as filled shapes; no star (it would read as a rating)"
+  },
+  "framesContract": {
+    "index": "data/area-index.json — 77 provinces, 928 districts, 7,436 subdistricts: names, production codes, areaSqm, label point, bbox; no geometry (js/areas.js#buildAreaIndex)",
+    "frames": "data/frames/{CODE}.json per province: {metadata, areas: FeatureCollection, districts: FeatureCollection} (subdistricts simplified once nationally at 30 m, districts dissolved)",
+    "loading": "js/frames.js#createFrameStore: ensure(code) idempotent, concurrency 2, versioned with the release tag; app.js loads the provinces the selection needs (filter, area, district, focus, store) and, after each camera move at zoom ≥ 7.5, up to 6 provinces under the map nearest its centre (js/frames.js#provinceLocator on data/provinces.geojson)",
+    "attach": "each outline is attached to its index record (feature); the merged FeatureCollections are re-set on the area sources (setFrames) and every feature-state is re-applied",
+    "failure": "a failed or invalid frame file is reported (console + map-status data attribute), never cached, retried on the next request; ranks, panels, charts and table never depend on frames"
+  },
+  "mapFocusContract": {
+    "principle": "Show detail only for the focused part; keep everything else quiet (carried over from Luxury Brands, owner 2026-10-22)",
+    "states": {
+      "overviewAuto": {
+        "focus": "top areas of the leading province: density fill, ink label chips with value and class swatch, cue symbols (rows with a point), rounded focus massing (zoom ≥ 13)",
+        "quiet": "other frames outline-only, light label chips from zoom 11 (≤ 12 desktop, none on a phone); rows outside the focus are grey context dots; city massing quiet"
+      },
+      "overviewAll": {
+        "focus": "every frame filled by density class; up to 30 labels (10 on a phone) from zoom 11",
+        "quiet": "none"
+      },
+      "district": {
+        "focus": "the district’s แขวง/ตำบล filled, district outline selected, their labels from zoom 9.5",
+        "quiet": "other frames outline-only"
+      },
+      "area": {
+        "focus": "selected frame fill below zoom 14.5, selected outline, cue symbols, HTML pins from zoom 15.5; every focus building is clickable",
+        "quiet": "other frames outline-only with label chips at a visible point for every frame on screen (≤ 16 desktop, ≤ 4 phone)"
+      },
+      "store": {
+        "focus": "selected ring, desktop popup, the building its point falls in drawn in map.activeLayer; massing focus = the store’s area + 250 m around its point",
+        "quiet": "inherits current focus"
+      },
+      "building": {
+        "focus": "the clicked building in map.activeLayer and the rows whose points fall inside it",
+        "quiet": "everything else; the camera stays where the user clicked"
+      },
+      "country": {
+        "focus": "province frames filled by count below zoom 8, ink chips with counts; a จังหวัด filter keeps its frame filled and quiets the others; ทั้งประเทศ clears the จังหวัด filter and the focus (?areas=all)",
+        "quiet": "subdistrict layers hidden below zoom 8"
+      },
+      "autoReleased": {
+        "focus": "national-scale adaptation: while no area of the AUTOMATIC focus is on screen, every loaded frame is filled (js/app.js#mapFocusIds, re-checked after each camera move); the panel keeps the Aha; explicit focus, a selected area or a district never release",
+        "quiet": "none"
+      }
+    },
+    "choropleth": "density.area classes, opacity 1 beneath the basemap’s first line layer, zoom 8–14.5 (hard switch off at 14.5), EVID-05 states per coverageContract",
+    "symbols": "symbol layer of cue icons for focus rows with a point above a grey circle layer of the whole scope’s points (context: not focusable, not clickable, sent only when the filters change)",
+    "labels": "HTML chips collision-managed against each other and the map chrome; area chips from zoom 8 (focus) / 11 (quiet), province chips below zoom 9"
+  },
+  "buildingJoinContract": {
+    "buildings": "focus-tier OSM footprints kept by js/massing.js before rounding/offset (stable ids focusFeatureId(tile, polygon ordinal in the tile))",
+    "points": "published source points (17% of rows); rows without one never join",
+    "rule": "a row joins the smallest drawn footprint containing its point (holes excluded); bbox grid index; recomputed when the focus tier or the filters change",
+    "click": {
+      "store": "one point → store",
+      "building": "several points → building panel ร้านยาที่จุดตกในอาคารนี้",
+      "none": "falls through to the area"
+    },
+    "highlight": "the open building, or the building the open store’s point falls in, moves to the massing venue tier in map.activeLayer",
+    "copy": "จุดตกในอาคาร (never ตั้งอยู่ใน); no floor or unit",
+    "neverChanges": [
+      "area membership (INV02)",
+      "any count outside the building panel"
+    ],
+    "module": "js/building-join.js (joinRows, containsPoint, footprint) + js/app.js#refreshJoin/applyJoin/buildingTarget"
+  },
+  "interactionContract": {
+    "clickOrder": [
+      "focus pin",
+      "focus building (buildingJoinContract.click)",
+      "province frame (zoom < 8)",
+      "แขวง/ตำบล via area-hit at every zoom ≥ 8"
+    ],
+    "sameArea": "a click inside the selected area changes nothing (pan and tilt freely)",
+    "otherProvince": "selecting an area or district in another province moves the จังหวัด filter with it",
+    "contextDots": "never click targets: a click in the quiet context selects the area underneath",
+    "hover": "pointer over anything clickable; a thin map.selectedStroke outline on the area a click would open",
+    "smoothMoves": [
+      "update() reuses scopeRows and the area model while the filters are unchanged",
+      "pins re-send only the focus rows; the context is re-sent only on filter change",
+      "the focus massing is shaped after the camera stops",
+      "labels, frame loading and the legend switch run once after the last move (scheduleLabelView)"
+    ],
+    "module": "js/app.js#onMapClick/onMapMove/refreshLabelView/ensureFramesInView, js/map-layers.js (area-hit, area-hover), js/pins.js, js/massing.js"
+  },
+  "basemapContract": {
+    "generator": "js/map-style.js#buildMapStyle(theme, {palette, tileJSON, glyphs}) — a MapLibre style v8 object built at runtime; no hosted style URL",
+    "tiles": {
+      "tileJson": "https://tiles.openfreemap.org/planet",
+      "schema": "OpenMapTiles (OpenFreeMap build)",
+      "sourceId": "openmaptiles",
+      "maxzoom": 14,
+      "buildingLayer": "building (fields render_height, render_min_height, hide_3d; available z13–14)",
+      "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf (Noto Sans Regular / Italic)",
+      "attribution": "© OpenMapTiles © OpenStreetMap contributors (OpenFreeMap)",
+      "labels": "name:th preferred, then name; no POI, housenumber or boundary labels"
+    },
+    "palette": {
+      "source": "assets/theme.css --basemap-* tokens (light and dark declared once each; basemap-only, not data colours)",
+      "resolver": "js/map-style.js#basemapPalette(theme)",
+      "light": {
+        "ground": "#EEF1EE",
+        "water": "#E2E9ED",
+        "park": "#DCE6D4",
+        "building": "#DFE2DD",
+        "massingQuiet": "#ECEDE8",
+        "massingFocus": "#D9D7CD",
+        "road": "#FFFFFF",
+        "roadCasing": "#DCE1DD",
+        "label": "#5F635A",
+        "halo": "#F6F7F3",
+        "sky": "#F6F7F3",
+        "fog": "#EEF1EE"
+      },
+      "dark": {
+        "ground": "#11191D",
+        "water": "#18333E",
+        "park": "#16251F",
+        "building": "#1C262B",
+        "massingQuiet": "#2A343A",
+        "massingFocus": "#4A5760",
+        "road": "#293337",
+        "roadCasing": "#33403D",
+        "label": "#A6B5B1",
+        "halo": "#11191D",
+        "sky": "#0D1418",
+        "fog": "#11191D"
+      }
+    },
+    "layerOrder": [
+      "background / landcover / park / water",
+      "data fill (inserted before DATA_FILL_BEFORE = waterway)",
+      "2D building footprints",
+      "roads, rail, paths",
+      "massing (city + focus tiers, open building in map.activeLayer) (inserted before MASSING_BEFORE = water-name, the first symbol layer)",
+      "labels",
+      "area outlines, selection outline, pins"
+    ],
+    "atmosphere": "sky + fog blend the far ground into the paper colour; viewport-anchored light (#FFFFFF, intensity 0.32) gives massing a soft shade; both are quiet context, never data",
+    "themeSwitch": "map.setStyle(buildMapStyle(theme)) then re-install spatial layers; data layers keep the same HEX on both themes"
+  },
+  "massingContract": {
+    "module": "js/massing.js#installMassing(map, {sourceId, beforeId, colors, tileUrl, fetchImpl}) → {update, retheme, dispose, layerIds}",
+    "cityTier": {
+      "layer": "city-massing (fill-extrusion, source openmaptiles, source-layer building, minzoom 13)",
+      "height": "render_height / render_min_height from the tile; hide_3d features excluded",
+      "colour": "--basemap-massing-quiet, vertical gradient, no outline",
+      "visibility": "3D view only; hidden in plan",
+      "filter": "['all', ['!=', ['get','hide_3d'], true]] (no host twins to hide in this product)"
+    },
+    "focusTier": {
+      "source": "focus-massing (GeoJSON built from the same tile URLs MapLibre loads, decoded by js/mvt.js; z14, ≤ 9 tiles per update, tiles touching the focus regions only)",
+      "layer": "focus-massing-3d (fill-extrusion, minzoom 13)",
+      "selection": "buildings overlapping a focus polygon (the selected area, the auto/explicit focus, or the open store’s area plus a 250 m square around its point), clipped to the tile box with buffer",
+      "shape": "js/geometry.js: cleanRing → clipRingToBox → offsetRing(+d) → roundRing(r, 3 segments, encloseOffset d)",
+      "height": "render_height + 0.35 m (HEIGHT_LIFT_M); base = render_min_height",
+      "colour": "--basemap-massing-focus, vertical gradient",
+      "visibility": "3D and plan (plan shows the rounded footprints flat)",
+      "cacheKey": "regions + hosts + zoom bucket (full zoom level) + tile availability"
+    },
+    "hostTier": "not used — no host buildings were collected; the open building (or the building of the open store) moves to the massing venue tier (focus-massing-venue) in map.activeLayer",
+    "rounding": {
+      "radiusMetres": "roundingRadiusM(zoom, lat) = clamp(4 px in metres at max(zoom, 14.5), 3, 12)",
+      "segmentsPerCorner": 3,
+      "reference": "maplibre/maplibre-style-spec#1047 (polygon corner radius) is unsupported in MapLibre; rounding is done in geometry, display only"
+    },
+    "enclosure": {
+      "offsetMetres": "encloseOffsetM(r) = max(1, r / 2.5)",
+      "radiusCap": "radius ≤ 0.95 · d / (1 − sin(θ/2)) so the rounded ring still encloses the original polygon at every corner",
+      "purpose": "the quiet city twin stays fully inside the rounded focus solid → no z-fighting without hiding it; host twins are hidden instead because the host solid is the data layer"
+    },
+    "provenance": "building heights and footprints are OSM via OpenFreeMap (defaults when no height tag); context only, never a claim of this dataset; OpenFreeMap merges same-height buildings into MultiPolygons, so single roofs cannot be picked",
+    "scene": {
+      "module": "massing.setScene('default')",
+      "note": "the eye scene and occluders are carried in the module but unused (no venue level in this product)"
+    },
+    "distanceFade": {
+      "rule": "city-tier colour interpolates from --basemap-massing-quiet (fade 0) to --basemap-ground (fade 1, invisible) by distance from the nearest focus anchor (area centroid; every area when nothing is focused)",
+      "nearMetres": 500,
+      "farMetres": 2200,
+      "mechanism": "feature-state `fade` written once per building id after tiles load (querySourceFeatures on sourcedata/moveend); anchors change → states rebuilt",
+      "why": "MapLibre has no camera-distance expression and fill-extrusion-opacity is not data-driven"
+    }
+  },
+  "cameraContract": {
+    "module": "js/camera.js (CAMERA, presetFor, applyPreset, fitPitched, framePoint, shiftPadding)",
+    "presets": {
+      "plan": {
+        "pitch": 0,
+        "bearing": 0,
+        "fov": 36.87,
+        "when": "view3d off (3D toggle / ?view3d=0), bounds wider than 0.3°, the country view and province frames"
+      },
+      "city": {
+        "pitch": 56,
+        "bearing": 28,
+        "fov": 36.87,
+        "fitShift": 0.2,
+        "when": "overview in 3D (first Aha)"
+      },
+      "model": {
+        "pitch": 60,
+        "bearing": 28,
+        "fov": 14,
+        "fitShift": 0.16,
+        "when": "แขวง/ตำบล, store and building in 3D — near-axonometric, verticals upright"
+      }
+    },
+    "fitting": {
+      "function": "fitPitched(map, bounds, {preset, padding, maxZoom 16, minZoom 10, points, shift})",
+      "method": "start from cameraForBounds (flat), apply preset pitch/bearing/FOV, zoom out in 0.1 steps until every point (polygon vertices when given, else bbox corners) projects inside the padded viewport, then zoom in while they still fit; jumps are computed without rendering and the final camera is animated",
+      "padding": "desktop 3D padding ignores the legend; mobile portrait with the sheet open uses plan, then re-frames in 3D on sheet close",
+      "bearing": "28° so the Siam → Chit Lom → Phrom Phong axis runs left-to-right on wide screens",
+      "แขวง/ตำบล": "fitRecord: fitPitched over the outline vertices when the province frame is loaded, else the index bbox corners (works before the outline arrives), maxZoom 17.5",
+      "province": "plan fit of the province bbox held at ≥ AREA_MIN_ZOOM + 0.05 so its choropleth (not the province count) shows",
+      "country": "ทั้งประเทศ: plan fit of the union of the 77 province boxes, maxZoom 7"
+    },
+    "maplibre": {
+      "version": "5.6.2",
+      "requires": "setVerticalFieldOfView (≥ 4.7), maxPitch 85; keep pitch ≤ 90 − fov/2 − 3 for any fill-extrusion view",
+      "orthographic": "not available in MapLibre; narrow FOV is the standard substitute"
+    },
+    "alternatives": "deck.gl custom projectionMatrix or three.js camera.setViewOffset give a true two-point camera; not adopted to keep a single MapLibre scene"
+  },
+  "breadcrumbContract": {
+    "module": "js/breadcrumb.js (buildBreadcrumb, renderBreadcrumb, breadcrumbText, productionHref) + js/model.js provinces(), productionLink",
+    "levels": [
+      "ประเทศไทย",
+      "จังหวัด (Thai name; production code in URL)",
+      "เขต/อำเภอ (DOPA district code)",
+      "แขวง/ตำบล (DOPA subdistrict code)"
+    ],
+    "storeMode": "the store’s own matched area › district › province (a row placed only at district or province level stops there); the store is the heading",
+    "productionPath": {
+      "observed": "https://landometer.com/v3/citymeter/{PROVINCE_CODE}[/D/{district code}|/S/{subdistrict code}] (route scheme read from the production bundle, ViewMode D/S/M/L); production has no pharmacy dataset yet, so no ?d= parameter",
+      "status": "Observed fact"
+    },
+    "demoQuery": "?province=BKK&district=1026&area=102601 (+ store, areas, view, view3d, count, quality, group, brand, search)",
+    "provinceCodes": "all 77 production codes from data/area-index.json → provinces[] (id = abbrEn, code = DOPA two-digit)",
+    "folding": "four levels fold the upper two behind “…” on narrow screens"
+  },
+  "provinceContract": {
+    "data": "data/provinces.geojson — 77 provinces; id = production code (BKK …), code = DOPA two-digit; dissolved from the production subdistrict frames and simplified at 250 m (scripts/build-boundaries.py)",
+    "module": "js/provinces.js#installProvinceLayers(map, geojson) → {update({rows, selectedCode, visible, unit}), dispose, model}; buildProvinceModel(rows, geojson, {unit})",
+    "rows": "filterRows(data.rows, {...filters, province: \"\"}) so each frame keeps its own count",
+    "metric": "rows per province (count family, geometric integer classes); measured_zero = lowest fill + zero outline",
+    "zoomWindows": {
+      "fill": "< 8",
+      "outline": "< 12",
+      "selected": "< 13",
+      "labels": "< 9"
+    },
+    "panel": "overview list จังหวัดที่มีร้านมากที่สุด (8 shown, the rest in a disclosure) — each a drill-down into the จังหวัด filter"
+  },
+  "pictogramContract": {
+    "status": "test exception to LDS nav-7 approved by the owner 2026-10-22 — evaluate here first, register in LDS if it proves itself; nav-7 subset bytes unchanged",
+    "font": "assets/icons/material-pictogram-300.woff2 (1732 bytes, sha256 33d9084bbd26b976d5c42002a0c669618573c21123567247816e9e694671c7b0), manifest assets/icons/material-pictogram-300.json, built by scripts/build-pictogram-font.py from google/material-design-icons MaterialSymbolsRounded[FILL,GRAD,opsz,wght].ttf (Apache-2.0)",
+    "axes": {
+      "FILL": 0,
+      "wght": 300,
+      "GRAD": 0,
+      "opsz": 24
+    },
+    "glyphs": {
+      "brand": "diamond U+EAD5",
+      "store": "storefront U+EA12",
+      "venue": "local_mall U+E54C",
+      "area": "map U+E55B",
+      "province": "location_city U+E7F1",
+      "exclusive": "star U+F09A",
+      "gla": "square_foot U+EA49",
+      "segment": "category U+E72C"
+    },
+    "usage": "metric tiles (js/panel.js#metricTile), section headings (js/panel.js#heading), province label chips; CSS .pictogram / .pic-<role>; text colour",
+    "accessibility": "aria-hidden decorative glyphs; the text label is the meaning; hidden until document.fonts reports the face (pictograms-ready), display:none when unavailable",
+    "meanings": {
+      "brand": "เครือร้าน",
+      "store": "ร้านยา",
+      "area": "แขวง/ตำบล",
+      "province": "จังหวัด",
+      "exclusive": "ร้านยาคุณภาพ (รายชื่อการรับรอง ไม่ใช่คะแนน)",
+      "gla": "ร้าน/ตร.กม.",
+      "segment": "ประเภทร้าน",
+      "venue": "not used"
+    }
+  },
+  "panel": {
+    "modes": [
+      "overview",
+      "district",
+      "area",
+      "building",
+      "store"
+    ],
+    "navigation": "back stack (max 20, restores the จังหวัด filter too); mode and id restored from URL (?district, ?area, ?store)",
+    "actions": [
+      "select-area",
+      "select-district",
+      "select-store",
+      "select-building",
+      "select-province",
+      "filter-brand",
+      "set-count",
+      "back",
+      "explore-top",
+      "clear-focus",
+      "open-charts",
+      "open-table",
+      "clear-filter",
+      "leave-area",
+      "crumb-country",
+      "crumb-province",
+      "crumb-district",
+      "crumb-area",
+      "crumb-expand"
+    ],
+    "models": {
+      "overview": "js/profile-model.js#buildOverview + js/area-insight.js#summarizeAreaInsight",
+      "district": "js/profile-model.js#buildDistrictProfile (+ unplaced rows)",
+      "area": "js/profile-model.js#buildAreaProfile",
+      "building": "js/profile-model.js#buildBuildingProfile",
+      "store": "js/profile-model.js#buildStoreDetail (+ sameBrandHere from every unit, labelled “อาจเป็นร้านเดียวกัน”)"
+    },
+    "renderer": "js/panel.js (pure HTML strings, delegated data-action clicks); provenance() ends every view: ชุดข้อมูล · แหล่ง · ทะเบียน ณ · ตรวจแหล่ง · ขอบเขต + what one unit is"
+  },
+  "data": {
+    "rowGrain": "one row of 02_STORES (source-qualified outlet candidate after the sheet’s merge rules); never merged, split or moved here",
+    "core": "data/pharmacies.json (columnar; meta, groups, brands, sources, urls, vocab, provinces, districts, areas, cols, points)",
+    "areas": "data/area-index.json (7,436 / 928 / 77, no geometry), data/frames/{CODE}.json (77 files), data/provinces.geojson (77), data/boundary-receipts.json (7,514 receipts)",
+    "snapshot": {
+      "rows": 23246,
+      "licensed": 18136,
+      "directory": 3384,
+      "chainSource": 1726,
+      "quality": 3103,
+      "points": 3974,
+      "brands": 32,
+      "licensedPlacedInSubdistrict": 18053,
+      "admin": {
+        "names": 19299,
+        "unique": 29,
+        "point": 528,
+        "district": 107,
+        "province": 3172,
+        "none": 111
+      }
+    },
+    "membershipPolicy": "production codes matched at build time from the row’s own administrative names (normalised exact match; unique subdistrict name in the province; published point inside the production polygon when no usable names); row.admin records the method",
+    "pointPolicy": "published source points only, inside Thailand’s box, 6 decimals, role kept; never geocoded or invented",
+    "privacy": "no phone, address, map link, notes or raw records; licence numbers are public register identifiers",
+    "sheetStatus": "research_only (meta.sheetStatus); data rights per source not yet checked (backlog N02)"
+  },
+  "visualSystem": {
+    "release": "LDS 0.9.7",
+    "releaseId": "v0.9.7-owner.1",
+    "revision": "standalone-0.9.7-r1",
+    "colorSetId": "color-srgb-10",
+    "normativeSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
+    "appliedTokens": "assets/theme.css (foundation pairs, semantic states, map roles, dataState, series 1–10, count classes, basemap-only tokens)",
+    "analyticalScales": {
+      "density.area": "554812a7c19107b3a9b8658ba541fc8e13519cb19708e885a425f32d5b30f101",
+      "count": "4ff5c1fb4be71ecd13c48685b38371b528bcd4ce369ce964a75354c2eb4d0980",
+      "lutSamples": 41,
+      "themePolicy": "identical light HEX on both themes",
+      "classification": "geometric 1–2–5 (declared by this consumer, DATAVIZ-02)",
+      "source": "js/scales.js"
+    },
+    "categoricalSeries": {
+      "registry": "landometer-series-10-v8",
+      "variant": "soft",
+      "assignment": "categoricalCueContract"
+    },
+    "parity": "scripts/check-lds-parity.mjs: 130 checks against the LDS source file",
+    "locationProfile": {
+      "document": "Location-Intelligence-Profile-for-LDS-v0.9.7.md",
+      "applied": false,
+      "reason": "licensed premises in a register are not a supply-capacity, demand, access or market measure"
+    },
+    "fonts": {
+      "body": "Bai Jamjuree 400/600",
+      "headingLatin": "Arvo 700",
+      "headingThai": "IBM Plex Sans Thai Looped 700",
+      "numbers": "JetBrains Mono 400 tabular"
+    },
+    "reportedDifference": "dark no-data/zero colours differ between the analytical scale records (#3B4849 / #BAC6C0) and machine.tokens.dataState (#404844 / #93A398); the EVID-05 treatments reference dataState, which the map uses"
+  },
+  "invariants": [
+    {
+      "id": "INV01",
+      "rule": "One row with a published point owns one symbol; no clustering or aggregation, including quiet context dots"
+    },
+    {
+      "id": "INV02",
+      "rule": "Membership is the production code matched at build time from the row’s own administrative names (row.admin); never re-assign by point-in-polygon on display coordinates or by name at runtime"
+    },
+    {
+      "id": "INV03",
+      "rule": "Density = rows ÷ production km²; combined density Σrows ÷ Σkm²; never average ratios"
+    },
+    {
+      "id": "INV04",
+      "rule": "Never rank by density below MIN_AREA_ROWS (30); small selections switch to counts and say so"
+    },
+    {
+      "id": "INV05",
+      "rule": "Counting unit: licensed rows by default (one ขย1 licence = one premises); every row only with ?count=all and the word “รายการ”; never mix units in one number"
+    },
+    {
+      "id": "INV06",
+      "rule": "Missing is never zero and never invented: no point → no pin but still counted; zero in the register = measured_zero with the register date; no geocoding"
+    },
+    {
+      "id": "INV07",
+      "rule": "Every panel view ends with dataset · source · date · boundary and what one unit is"
+    },
+    {
+      "id": "INV08",
+      "rule": "The licence status is not an opening check and the quality list has no validity dates — never claimed otherwise"
+    },
+    {
+      "id": "INV09",
+      "rule": "Chains are the sheet’s approved banners only; candidates show “ยังไม่ยืนยัน”; other rows of the same chain in the same area are “อาจเป็นร้านเดียวกัน”, never “สาขาเดียวกัน”"
+    },
+    {
+      "id": "INV10",
+      "rule": "Analytical colours are exact LDS LUT values, identical on both themes; categorical colours keep their shape cue"
+    },
+    {
+      "id": "INV11",
+      "rule": "The first paint is the 3D city preset with the auto focus in the leading province; numbers never change with the camera"
+    },
+    {
+      "id": "INV12",
+      "rule": "scopeRows drive the Aha, choropleth and charts; rows drive symbols with detail, counters and table"
+    },
+    {
+      "id": "INV13",
+      "rule": "Province frames use counts, not density"
+    },
+    {
+      "id": "INV14",
+      "rule": "Breadcrumb levels and deep links follow production codes; a store is never a crumb; a selection in another province moves the จังหวัด filter"
+    },
+    {
+      "id": "INV15",
+      "rule": "Only the open building (or the open store’s building) carries the data colour"
+    },
+    {
+      "id": "INV16",
+      "rule": "Matrix cells are equal in size; the quality share is of the area’s rows"
+    },
+    {
+      "id": "INV17",
+      "rule": "Core value (Aha, panel, charts, table) works without the map and without frame files"
+    },
+    {
+      "id": "INV18",
+      "rule": "No private Drive/Sheet URLs, credentials, internal sheet, phone numbers, addresses, notes or the full LDS library in the repository"
+    },
+    {
+      "id": "INV19",
+      "rule": "Map attribution (OpenStreetMap, OpenMapTiles/OpenFreeMap, CityMETER) stays readable above the charts tray; the legend, the phone Aha card and area labels keep clear of it"
+    },
+    {
+      "id": "INV20",
+      "rule": "A measured non-zero density never prints as 0 (one shared format: 1 decimal ≥ 1, 2 below 1, 3 below 0.1, “<0.001” below that) on labels, panel and charts"
+    },
+    {
+      "id": "INV21",
+      "rule": "The building join is display-time only: published points × drawn footprints, said as “จุดตกในอาคาร”; it never changes any count"
+    },
+    {
+      "id": "INV22",
+      "rule": "Map clicks follow interactionContract.clickOrder; another แขวง/ตำบล is clickable from zoom 8; a click inside the selected area changes nothing; quiet context dots are never targets"
+    },
+    {
+      "id": "INV23",
+      "rule": "Frames load on demand (the selection + ≤ 6 provinces under the map at subdistrict zoom); never all 77 up front; a failed load is retried, never cached"
+    },
+    {
+      "id": "INV24",
+      "rule": "A selection never re-sends the context points or shapes massing during a camera move; pins only follow the map while it moves"
+    }
+  ],
+  "chartContracts": [
+    {
+      "viewKey": "density",
+      "title": "ความหนาแน่น",
+      "question": "แขวง/ตำบลไหนร้านยาแน่นที่สุด",
+      "encoding": "sorted horizontal bars of eligible areas; fill = density.area class of these areas; province under the name nationally; count bars when no area is eligible",
+      "metric": "ร้าน/ตร.กม. (+ ร้าน)",
+      "scope": "scopeRows",
+      "action": {
+        "type": "area",
+        "id": "subdistrict code"
+      }
+    },
+    {
+      "viewKey": "mix",
+      "title": "ประเภทร้าน",
+      "question": "พื้นที่ที่แน่นที่สุดมีร้านแบบไหน",
+      "encoding": "equal-cell matrix area × 5 groups; tint = count class; headers carry the series cue",
+      "metric": "ร้านต่อช่อง",
+      "scope": "scopeRows (12 densest areas)",
+      "action": {
+        "type": "area",
+        "id": "subdistrict code"
+      }
+    },
+    {
+      "viewKey": "quality",
+      "title": "ร้านยาคุณภาพ",
+      "question": "ร้านในพื้นที่เหล่านั้นอยู่ในรายชื่อร้านยาคุณภาพแค่ไหน",
+      "encoding": "part-of-whole bar (series 10 + plus cue) over the plain track; listed/total beside it",
+      "metric": "share of the area’s rows on the quality list",
+      "scope": "scopeRows (12 densest areas)",
+      "action": {
+        "type": "area",
+        "id": "subdistrict code"
+      }
+    }
+  ],
+  "delivery": {
+    "site": "GitHub Pages from main /root",
+    "handoff": "dist/CityMETER-Pharmacy-Developer-Handoff.zip (START_HERE.md, RELEASE_RECEIPT.json, evidence/, source/)",
+    "liveCheck": "npm run verify:live",
+    "cacheTag": "?v=20261023-r1 on every entry file and, through the import map in index.html, on every ES module; the frame files take the same tag from import.meta.url; bump it with package.json version (tests/release.test.js)"
+  }
+}

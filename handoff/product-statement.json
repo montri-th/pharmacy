@@ -1,0 +1,312 @@
+{
+  "$schema": "./handoff.schema.json",
+  "schemaVersion": "1.5.0",
+  "documentType": "product-statement",
+  "productId": "citymeter-pharmacy",
+  "productVersion": "0.1.0",
+  "updatedOn": "2026-10-23",
+  "humanDocument": "../PRODUCT_STATEMENT.md",
+  "standard": "Product Brief — CityMETER v6 §1.6.3 metadata block; Master Brand Brief v0.5.3 §7.2 / §3.7",
+  "evidenceLabels": {
+    "personas": "hypothesis",
+    "alternatives": "inference",
+    "dataFacts": "observed",
+    "urgency": "inference",
+    "severity": "inference"
+  },
+  "dataset_id": "pharmacy",
+  "dataset_name_en": "Pharmacy",
+  "dataset_name_th": "ร้านยา",
+  "category": "Living",
+  "outcome_layer": "Local Decisions",
+  "status": "prototype",
+  "positioning": {
+    "one_line_highlight": "แผนที่ความหนาแน่นร้านยาที่มีใบอนุญาตระดับแขวง/ตำบลทั่วประเทศ ที่บอกว่าร้านยาแน่นตรงไหน เป็นเครือหรือร้านท้องถิ่น อยู่ในรายชื่อร้านยาคุณภาพแค่ไหน พร้อมที่มาของทุกตัวเลข",
+    "unique_advantage": "นับร้านละครั้งตามใบอนุญาต ขย1 แล้วอ่านเป็นความหนาแน่นต่อแขวง/ตำบลทั้ง 7,436 แห่ง ตัวหารเดียวกัน พร้อมประเภทร้าน เครือร้าน ร้านยาคุณภาพ และที่มาของทุกตัวเลข",
+    "unique_vs_competitors": "ไฟล์ทะเบียนไม่มีพิกัดและไม่สรุปเป็นพื้นที่; แผนที่ค้นหาให้ทีละจุดและไม่บอกใบอนุญาต; หน้าค้นหาสาขาทีละเครือ — ชั้นข้อมูลนี้รวมเป็นพื้นที่ที่เทียบกันได้ ไม่นับซ้ำ และบอกขอบเขตข้อมูล"
+  },
+  "users": {
+    "primary_users": [
+      "ทีมขยายสาขาของเครือร้านยาและร้านสุขภาพ/ความงาม",
+      "ทีมขายและวางเขตของผู้ผลิต/ผู้จัดจำหน่ายยาและเวชภัณฑ์",
+      "นักวิเคราะห์ ที่ปรึกษา และหน่วยงานท้องถิ่น"
+    ],
+    "decision_contexts": [
+      "เปิดสาขาใหม่ที่พื้นที่ใด",
+      "แบ่งเขตการขายและลำดับการเยี่ยมร้าน",
+      "หลักฐานใดใช้ในรายงานบริการสุขภาพในพื้นที่"
+    ],
+    "functional_needs": [
+      "ความหนาแน่นร้านยาที่มีใบอนุญาตเทียบพื้นที่ด้วยตัวหารเดียวกัน",
+      "สัดส่วนเครือกับร้านท้องถิ่น และเครือที่อยู่แล้ว",
+      "สัดส่วนร้านยาคุณภาพ",
+      "รายชื่อร้านพร้อมเลขใบอนุญาตและที่มา"
+    ],
+    "emotional_needs": [
+      "ไม่อยากนับร้านซ้ำ",
+      "อยากมีเหตุผลที่อธิบายต่อผู้บริหารได้",
+      "กลัวถูก challenge เรื่องที่มาและวันที่"
+    ],
+    "trigger_voice_in_head": [
+      "แถวนี้มีร้านยากี่ร้านแล้ว?",
+      "จังหวัดนี้ร้านยากระจุกอยู่ตำบลไหน?",
+      "ตัวเลขนี้นับร้านซ้ำไหม ทะเบียนเป็นข้อมูล ณ วันไหน?"
+    ],
+    "value_proposition": "เปลี่ยนไฟล์ทะเบียนหลายหมื่นแถวกับรายชื่อหลายแหล่ง ให้เป็นตัวเลขต่อพื้นที่ที่เทียบกันได้ นับร้านละครั้ง และบอกขอบเขตข้อมูลชัด"
+  },
+  "problem": {
+    "statement": "ก่อนคัดพื้นที่ ทีมต้องรู้ว่าร้านยาที่มีใบอนุญาตหนาแน่นที่สุดตรงไหน เป็นร้านแบบไหน และเครือใดอยู่แล้ว แต่ไม่มีแหล่งเดียวที่นับร้านละครั้ง สรุปเป็นพื้นที่ทั่วประเทศ และบอกขอบเขตข้อมูลชัด",
+    "not_solved": [
+      "ยอดขาย",
+      "ความต้องการยา",
+      "การเข้าถึงต่อประชากร",
+      "ระยะเดินทาง",
+      "คุณภาพการบริการ"
+    ],
+    "urgency": "ทุกรอบที่วางแผนขยายสาขาหรือแบ่งเขตการขาย (Inference)",
+    "severity": "การเลือกทำเลผิดผูกกับสัญญาเช่าและการลงทุนร้าน (Inference; ไม่มีตัวเลขต้นทุนเป็นหลักฐาน)"
+  },
+  "competitor_landscape": {
+    "present_competitors": [
+      {
+        "name": "ไฟล์ทะเบียนใบอนุญาต (open data ของ อย.)",
+        "how_users_use_it": "นับร้านที่มีใบอนุญาตตามจังหวัด/อำเภอ",
+        "strength": "เป็นทางการ ครบทั้งประเทศ มีเลขใบอนุญาต",
+        "gap": "ไม่มีพิกัด ไม่มีตัวหาร ชื่อพื้นที่สะกดหลายแบบ ต้อง pivot เอง"
+      },
+      {
+        "name": "หน้าค้นหาของสภาเภสัชกรรม",
+        "how_users_use_it": "ตรวจร้านในระบบหรือร้านยาคุณภาพ",
+        "strength": "แหล่งของวิชาชีพ",
+        "gap": "ค้นทีละร้าน ไม่สรุปเป็นพื้นที่ ซ้ำกับทะเบียน"
+      },
+      {
+        "name": "Google Maps",
+        "how_users_use_it": "ค้นร้านขายยารอบจุดหนึ่ง",
+        "strength": "เร็ว มีพิกัดและรูป",
+        "gap": "จุดทีละร้าน ไม่บอกใบอนุญาต ไม่มีตัวหาร ใช้เป็นหลักฐานไม่ได้"
+      },
+      {
+        "name": "หน้าค้นหาสาขาของแต่ละเครือ",
+        "how_users_use_it": "ดูว่าเครือคู่แข่งอยู่ที่ไหน",
+        "strength": "ตรงจากเจ้าของเครือ",
+        "gap": "ทีละเครือ ไม่เทียบกับร้านท้องถิ่น ไม่สรุปเป็นพื้นที่"
+      },
+      {
+        "name": "เดินสำรวจ / รายงานที่ปรึกษา",
+        "how_users_use_it": "นับร้านรอบทำเลเป้าหมาย",
+        "strength": "แม่นในจุดที่สำรวจ",
+        "gap": "ใช้แรงงาน ช้า ทำได้ไม่กี่พื้นที่"
+      }
+    ],
+    "aspirational_competitors": [
+      "เครื่องมือแผนที่สถาปัตยกรรม (archiMap)",
+      "แพลตฟอร์ม location intelligence ระดับสากล",
+      "CityMETER · Luxury Brands 0.5 และ Restaurants 0.2.1",
+      "CityMETER production"
+    ],
+    "expected_quality_bar": [
+      "ตอบ “แน่นที่สุดตรงไหน” ใน 1 นาที",
+      "นับร้านละครั้งเป็นค่าเริ่มต้น และบอกหน่วยนับเสมอ",
+      "dataset · source · date · boundary ทุกตัวเลข",
+      "ตัวหารเดียวกันทั่วประเทศ",
+      "0 ตามทะเบียน ≠ ไม่มีข้อมูล ≠ ไม่มีพิกัด",
+      "ภาพพร้อมห้องประชุม สองธีม จอแคบ",
+      "breadcrumb และลิงก์ลึกตรง production",
+      "ซื่อสัตย์เรื่องขอบเขต"
+    ]
+  },
+  "winning_strategy": [
+    "นับร้านละครั้งตามใบอนุญาต ขย1 (หน่วยเริ่มต้น); ทุกรายการเป็นหน่วยแยกที่ใช้คำว่า “รายการ”",
+    "อ่านเป็นพื้นที่ด้วยความหนาแน่นทั่วประเทศ (ตัวหาร = ตร.กม. ของ production, เกณฑ์ 30 ร้าน, ฐานเทียบจังหวัดที่นำ)",
+    "ขยายได้ทั้งประเทศโดยไม่หนัก (ดัชนีครั้งเดียว + ขอบเขตทีละจังหวัด)",
+    "โฟกัสแล้วเงียบ",
+    "ซื่อสัตย์เรื่องพิกัด (ไม่สร้างพิกัดเอง)",
+    "พร้อมสำหรับคนและเครื่อง (breadcrumb production, JSON + schema)"
+  ],
+  "primary_decisions": [
+    "screen แขวง/ตำบลสำหรับร้านใหม่",
+    "compare ประเภทร้านและร้านยาคุณภาพข้ามพื้นที่",
+    "prioritize พื้นที่ไปสำรวจหรือเยี่ยม"
+  ],
+  "primary_questions": [
+    "ร้านยาแน่นที่สุดอยู่ตรงไหน",
+    "พื้นที่นี้เป็นร้านแบบไหน เครือใดอยู่แล้ว",
+    "ร้านยาคุณภาพมีสัดส่วนเท่าไร"
+  ],
+  "channel_readiness": {
+    "search": {
+      "priority": "P2",
+      "target_queries": [
+        "ร้านยา หนาแน่น ตำบล",
+        "pharmacy density Thailand subdistrict"
+      ],
+      "required_page_blocks": [
+        "title/meta",
+        "summary",
+        "map",
+        "HTML table",
+        "source/limitation"
+      ],
+      "schema_types": [
+        "Dataset",
+        "Place"
+      ]
+    },
+    "llm": {
+      "priority": "P1",
+      "askable_questions": [
+        "แขวงไหนร้านยาแน่นที่สุดในกรุงเทพฯ",
+        "ตำบลนี้มีร้านยาที่มีใบอนุญาตกี่ร้าน"
+      ],
+      "machine_files": [
+        "handoff/product-brief.json",
+        "data/pharmacies.json"
+      ]
+    }
+  },
+  "primary_decision_actions": [
+    "screen",
+    "compare",
+    "prioritize",
+    "open in production"
+  ],
+  "data_sources": [
+    {
+      "name": "ทะเบียนผู้รับอนุญาตขายยาแผนปัจจุบัน (ขย1) อย.",
+      "owner": "สำนักงานคณะกรรมการอาหารและยา",
+      "url_or_reference": "https://catalog.fda.moph.go.th/dataset/036fc96e-d1be-4ec6-bf79-bfe685e32f51",
+      "data_type": "open data register (no coordinates); as of 2026-05-28"
+    },
+    {
+      "name": "รายชื่อร้านยาและร้านยาคุณภาพ สภาเภสัชกรรม",
+      "owner": "สภาเภสัชกรรม",
+      "url_or_reference": "https://www.acc-pharm.com/DrugStore · https://www.acc-pharm.com/Pharmacy",
+      "data_type": "public directory; retrieved 2026-10-22; no validity dates"
+    },
+    {
+      "name": "หน้าค้นหาสาขาของ 32 เครือ",
+      "owner": "เจ้าของเครือ",
+      "url_or_reference": "data/pharmacies.json → brands[].sourcePage",
+      "data_type": "official branch lists; checked 2026-10-22"
+    },
+    {
+      "name": "Research sheet (02_STORES, 01_BRANDS, 04_SOURCES)",
+      "owner": "Landometer · CityMETER research",
+      "url_or_reference": "internal (not in the repository); sha256 in meta.sheetSha256",
+      "data_type": "research master (research_only)"
+    },
+    {
+      "name": "CityMETER production boundaries",
+      "owner": "Landometer · CityMETER",
+      "url_or_reference": "https://landometer.com/v3/citymeter",
+      "data_type": "administrative frames + areaSqm (7,514 receipts)"
+    }
+  ],
+  "spatial_granularity": "ร้าน (ใบอนุญาต) → แขวง/ตำบล (analytical unit, 7,436) → เขต/อำเภอ (928) → จังหวัด (77, production code) → ประเทศ",
+  "temporal_coverage": "FDA register as of 2026-05-28 (resource modified 2026-08-04); other sources checked 2026-10-22",
+  "update_frequency": "ad hoc",
+  "last_updated": "2026-10-22",
+  "key_metrics": [
+    "licensed pharmacies per km² per แขวง/ตำบล",
+    "combined density of the leading province’s top areas",
+    "leading-province benchmark density",
+    "densest eligible area outside the leading province",
+    "pharmacies per province (count)",
+    "rows by store group",
+    "share on the Pharmacy Council quality list"
+  ],
+  "visual_layers": [
+    "choropleth",
+    "point (cue symbols)",
+    "polygon",
+    "ranking",
+    "matrix",
+    "part-of-whole bar",
+    "3d-massing"
+  ],
+  "recommended_pairing_layers": [
+    "Population",
+    "Hospital",
+    "Shopping Center",
+    "Building",
+    "Business Dynamics",
+    "Locale Insight (context only)"
+  ],
+  "data_transparency": {
+    "raw_fields": [
+      "store name",
+      "ขย1 licence number",
+      "store segment",
+      "approved chain",
+      "quality-list status",
+      "province/district/subdistrict names",
+      "published source point (17% of rows)",
+      "source type and page"
+    ],
+    "calculated_metrics": [
+      "density (rows ÷ km²)",
+      "combined density Σ/Σ",
+      "province benchmark",
+      "group and quality shares",
+      "rows per province"
+    ],
+    "inferred": [
+      "5 store groups from sheet segments",
+      "production codes matched from names (row.admin)",
+      "area ranks (screening order, not potential)"
+    ],
+    "excluded": [
+      "phone numbers",
+      "addresses",
+      "map links",
+      "researcher notes",
+      "raw source records"
+    ]
+  },
+  "known_limitations": [
+    "ไม่ใช่สำมะโนร้านยา",
+    "สถานะใบอนุญาตไม่ใช่การยืนยันว่าเปิด",
+    "หน่วยเริ่มต้นไม่รวม 5,110 รายการที่ยังจับคู่ใบอนุญาตไม่ได้",
+    "ขย2 (1,215) ไม่อยู่ในชุดนี้",
+    "พิกัดมีเพียง 17% ของแถว",
+    "ตัวหารเป็นพื้นที่ทั้งตำบล ไม่ใช่ต่อประชากร",
+    "รายชื่อร้านยาคุณภาพไม่ระบุวันหมดอายุ",
+    "สิทธิ์การใช้ข้อมูลของแต่ละแหล่งยังไม่ได้ตรวจ"
+  ],
+  "methodology_note": "DATA_METHOD.md, docs/AREA_METHOD.md, docs/CHART_SELECTION.md",
+  "example_use_cases": [
+    "คัดตำบลสำหรับสาขาใหม่ของเครือร้านยา",
+    "แบ่งเขตการขายของผู้จัดจำหน่ายยาตามความหนาแน่นร้าน",
+    "ภาพความหนาแน่นร้านยาสำหรับรายงานบริการสุขภาพของหน่วยงานท้องถิ่น"
+  ],
+  "hypotheses_to_validate": [
+    {
+      "hypothesis": "ผู้ใช้สามกลุ่มถาม ‘แน่นแค่ไหน/ร้านแบบไหน’ ก่อนคัดพื้นที่และเริ่มจากพื้นที่",
+      "test": "สัมภาษณ์ 3–5 คนต่อกลุ่มด้วย demo 0.1",
+      "criterion": "≥ 2 ใน 3 กลุ่มยืนยัน trigger และใช้โปรไฟล์พื้นที่ก่อนตาราง"
+    },
+    {
+      "hypothesis": "การนับตามใบอนุญาตเป็นค่าเริ่มต้นช่วยให้ไว้ใจตัวเลขมากกว่ารายการรวมทุกแหล่ง",
+      "test": "ให้ผู้ใช้เทียบสองหน่วยนับแล้วเลือกตัวที่จะใช้ในรายงาน",
+      "criterion": "≥ 80% เลือกหน่วยใบอนุญาตและอธิบายเหตุผลได้"
+    },
+    {
+      "hypothesis": "ร้าน/ตร.กม. ไม่ถูกอ่านเป็นการเข้าถึงต่อประชากร",
+      "test": "ให้ผู้ใช้อธิบายตัวเลขด้วยคำของตัวเอง",
+      "criterion": "≥ 80% อธิบายถูก"
+    },
+    {
+      "hypothesis": "ภาพ 3D focus/quiet ถูกใช้ใน deck โดยไม่วาดใหม่",
+      "test": "ขอ screenshot ที่ผู้ทดลองใช้จริง",
+      "criterion": "อย่างน้อย 1 กรณี (ไม่นับเป็น traction)"
+    },
+    {
+      "hypothesis": "เวลาจากคำถามถึงรายชื่อพื้นที่ที่ส่งต่อได้ < 10 นาที",
+      "test": "จับเวลา task ตั้งต้น 3 งาน",
+      "criterion": "ค่ามัธยฐาน < 10 นาที"
+    }
+  ],
+  "owner_team": "Landometer · CityMETER",
+  "last_reviewed": "2026-10-23"
+}
