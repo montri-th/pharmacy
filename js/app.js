@@ -35,7 +35,9 @@
  * จังหวัด, else a province → แขวง/ตำบล (`area-hit`, every zoom from AREA_MIN_ZOOM). Quiet context dots are
  * never targets.
  * Panel modes: overview | district | area | building | store (with a back stack).
- * URL state: filters, district, area, areas, view, store, view3d.
+ * URL state (own names, inside): filters, district, area, areas, view, store, view3d — written in the shared
+ * grammar d · at · e · m · f.* · focus · view · v3d by citymeter-shell (js/shell/url.js), with a browser history
+ * entry per level (the back button goes up a level).
  */
 import {provinces as provinceList, provinceByCode, provinceCodeFrom, setProvinces, decodeDataset, filterRows, summarize, hasPoint, unitWords, productionLink, EVIDENCE_SHORT} from './model.js';
 import {buildAreaIndex, areaWord, districtWord, areaLocator, recordBounds} from './areas.js';
@@ -53,6 +55,8 @@ import {buildMapStyle, basemapPalette, TILEJSON_URL, MASSING_BEFORE} from './map
 import {installMassing, outerRings} from './massing.js';
 import {presetFor, applyPreset, fitPitched, framePoint} from './camera.js';
 import {buildBreadcrumb, renderBreadcrumb, breadcrumbText} from './breadcrumb.js';
+import {createCodec, createNavigator} from './shell/url.js';
+import {pageTitle} from './shell/title.js';
 import {cueMarkup} from './cues.js';
 
 const $ = id => document.getElementById(id);
@@ -81,6 +85,17 @@ const state = {
   blueBuildings: false, lastPreset: '',
 };
 
+/* ---------- address (citymeter-shell, js/shell/url.js) ---------- */
+// The page keeps its own parameter names inside (saveURL / restoreFromURL); the shell writes them in the shared
+// grammar d · at · e · m · f.* · focus · view · v3d, and opening an area or a store adds one browser history entry,
+// so the back button goes up a level. `at` reaches the subdistrict (BKK/S/102601). Old links (?district=, ?area=,
+// ?store= …) still open and are rewritten. `d=pharmacy` is the code proposed in the dataset registry (P01, not yet
+// a production dataset) and the `e` kind `store` is provisional until the registry declares it.
+const nav = createNavigator(createCodec({
+  dataset: 'pharmacy', levels: ['P', 'D', 'S'], place: {province: 'province', D: 'district', S: 'area'},
+  items: {store: 'store'}, filters: FIELDS,
+  provinceOf: (code, kind) => (kind === 'S' ? state.index?.byId.get(code) : state.index?.districtById.get(code))?.province || '',
+}), {onPop: restoreFromHistory});
 /* ---------- helpers ---------- */
 const values = () => Object.fromEntries(FIELDS.map(k => [k, $(k).value]));
 const unit = () => unitWords($('count').value === 'all' ? 'all' : 'licensed');
@@ -115,7 +130,8 @@ function saveURL() {
   if (state.view !== 'density') p.set('view', state.view);
   if (state.panel.mode === 'store' && state.panel.id) p.set('store', state.panel.id);
   if (!state.view3d) p.set('view3d', '0');
-  history.replaceState(null, '', location.pathname + (p.size ? '?' + p : ''));
+  // A building view has no address of its own: the address stays on what it was opened from.
+  if (state.panel.mode !== 'building') nav.commit(p);
 }
 
 /* ---------- theme ---------- */
@@ -274,8 +290,10 @@ function renderCrumbs() {
     crumbs = buildBreadcrumb({province: $('province').value, area: state.selectedArea ? areaById(state.selectedArea) : null, district: state.selectedDistrict ? districtById(state.selectedDistrict) : null});
   }
   $('crumbs').innerHTML = renderBreadcrumb(crumbs);
-  const title = mode === 'store' ? `${rowById(id)?.name || ''} · ` : mode === 'building' ? 'อาคาร · ' : '';
-  document.title = `${title}${breadcrumbText(crumbs)} · Pharmacy · CityMETER`;
+  // Tab title: what the view shows, then the product, ≤ 60 characters (LDS FAVICON-01, js/shell/title.js).
+  const place = crumbs[crumbs.length - 1].label;
+  document.title = pageTitle(mode === 'store' ? rowById(id)?.name || place
+    : mode === 'building' ? `อาคาร ${place}` : `${unit().subject} ${place}`);
   return crumbs;
 }
 
@@ -353,6 +371,8 @@ function pushHistory() {
 }
 
 function goBack() {
+  // Every level change is a browser history entry (citymeter-shell): go up the way the browser's button does.
+  if (state.panel.mode !== 'building' && nav.canGoBack()) { nav.back(); return; }
   const previous = state.history.pop();
   if (!previous) { state.selectedArea = ''; state.selectedDistrict = ''; state.panel = overviewPanel(); update({fit: true}); return; }
   const fit = previous.area !== state.selectedArea || previous.district !== state.selectedDistrict || previous.province !== $('province').value;
@@ -589,8 +609,8 @@ function onPanelAction(event) {
     case 'clear-filter': clearFilter(id); break;
     case 'crumb-country': $('province').value = ''; resetToOverview(); break;
     case 'crumb-province': { const c = provinceCodeFrom(id); if (c) $('province').value = c; resetToOverview(); break; }
-    case 'crumb-district': selectDistrict(id); break;
-    case 'crumb-area': selectArea(id); break;
+    case 'crumb-area': selectDistrict(id); break;
+    case 'crumb-sub': selectArea(id); break;
     case 'crumb-expand': { const ol = target.closest('.crumbs'); ol.classList.add('is-expanded'); target.setAttribute('aria-expanded', 'true'); ol.querySelector('.crumb:not(.crumb-more)')?.focus({preventScroll: true}); break; }
     default: break;
   }
@@ -1145,7 +1165,7 @@ function refreshOptionCounts() {
 }
 
 function restoreFromURL() {
-  const p = new URLSearchParams(location.search);
+  const p = nav.read();
   for (const f of FIELDS) if (p.has(f)) { const v = f === 'province' ? provinceCodeFrom(p.get(f)) : p.get(f); if ([...$(f).options].some(o => o.value === v) || f === 'search') $(f).value = v; }
   if (['density', 'mix', 'quality'].includes(p.get('view'))) state.view = p.get('view');
   if (p.get('district') && districtById(p.get('district'))) state.selectedDistrict = p.get('district');
@@ -1161,6 +1181,17 @@ function restoreFromURL() {
     if (!store.licensed) $('count').value = 'all';
     state.panel = {mode: 'store', id: store.id};
   }
+}
+
+/** Browser back / forward (citymeter-shell): show the level the restored address names. */
+function restoreFromHistory() {
+  for (const f of FIELDS) $(f).value = '';
+  Object.assign(state, {view: 'density', selectedArea: '', selectedDistrict: '', focusAreaIds: [], autoFocus: true, panel: overviewPanel(), history: [], buildingSel: null});
+  refreshOptionCounts();
+  restoreFromURL();
+  refreshOptionCounts();
+  $('toggle-3d').setAttribute('aria-pressed', String(state.view3d));
+  update({fit: true});
 }
 
 function wireEvents() {

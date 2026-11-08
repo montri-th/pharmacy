@@ -62,7 +62,7 @@ js/pins.js            สัญลักษณ์ร้าน, จุดบร�
 js/building-join.js   จุดของร้าน × อาคารที่แผนที่วาด
 js/massing.js · js/geometry.js · js/mvt.js · js/map-style.js · js/camera.js · js/vendors.js
                       มวลอาคารเมือง, basemap, กล้อง, MapLibre loader (ใช้ร่วมกับ Luxury Brands / Restaurants)
-js/profile-model.js · js/panel.js · js/chart-model.js · js/charts.js · js/breadcrumb.js · js/navigation.js · js/launch.js
+js/profile-model.js · js/panel.js · js/chart-model.js · js/charts.js · js/breadcrumb.js · js/navigation.js · js/shell/launch.js
 data/                 pharmacies.json, area-index.json, frames/{CODE}.json (77 จังหวัด), provinces.geojson, boundary-receipts.json
 scripts/              build-boundaries.py, build-data.py, build-handoff.mjs, verify-live.mjs, check-lds-parity.mjs, build-pictogram-font.py
 tests/                node --test บนข้อมูลจริง
