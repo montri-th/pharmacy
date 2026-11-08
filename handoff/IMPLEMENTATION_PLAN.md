@@ -30,7 +30,7 @@ npm run verify:live                         # เทียบไบต์บน�
 | `js/pins.js` | สัญลักษณ์โฟกัส จุดบริบท (เฉพาะแถวที่มีจุด) หมุด HTML |
 | `js/building-join.js` | จุดของร้าน × ขอบอาคารที่วาด |
 | `js/massing.js` · `js/geometry.js` · `js/mvt.js` · `js/map-style.js` · `js/camera.js` · `js/vendors.js` | สืบจาก Luxury Brands/Restaurants; 0.1.1 เปลี่ยนเฉพาะ `massing.js`: ไทล์ ≤ 16 ที่ใกล้กล้องที่สุด และ focus tier จากซูม 12 ใน 3D เมื่อไทล์ครบ |
-| `js/breadcrumb.js` · `js/profile-model.js` · `js/panel.js` · `js/chart-model.js` · `js/charts.js` · `js/navigation.js` · `js/launch.js` | breadcrumb, view models, HTML ของแผง, กราฟ, nav-7 และ help, หน้าโหลด |
+| `js/breadcrumb.js` · `js/profile-model.js` · `js/panel.js` · `js/chart-model.js` · `js/charts.js` · `js/navigation.js` · `js/shell/launch.js` | breadcrumb, view models, HTML ของแผง, กราฟ, nav-7 และ help, หน้าโหลด |
 | `scripts/build-boundaries.py` · `scripts/build-data.py` · `scripts/check-lds-parity.mjs` · `scripts/build-handoff.mjs` · `scripts/verify-live.mjs` | สร้างขอบเขต/ข้อมูล, ตรวจ LDS, manifest/bundle, ตรวจเว็บจริง |
 
 ## 3. Selection

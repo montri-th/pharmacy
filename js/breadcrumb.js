@@ -1,59 +1,22 @@
 /**
- * Breadcrumb — ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล — the CityMETER production hierarchy.
- *
- * Production routes (observed in the landometer.com/v3 bundle, 2026-10-22: ViewMode = {D, S, M, L};
- * lv1 = province abbrEn, lv2 = one typed level):
- *   /v3/citymeter/{abbrEn}                         e.g. BKK
- *   /v3/citymeter/{abbrEn}/D/{district code}       เขต/อำเภอ (DOPA code, e.g. 1026)
- *   /v3/citymeter/{abbrEn}/S/{subdistrict code}    แขวง/ตำบล (e.g. 102601)
- * Production has no pharmacy dataset yet, so the links carry no `d` parameter. The demo is static, so it
- * serialises the same ids as query parameters: ?province=BKK&district=1026&area=102601 — every crumb also
- * carries the production deep link.
- *
- * A store is the panel heading, never a crumb — its crumbs are its own matched subdistrict, district and
- * province (a row placed only at district or province level stops there).
+ * Breadcrumb — ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล — the CityMETER production hierarchy, through the shared
+ * shell (js/shell/breadcrumb.js, citymeter-shell 0.4.0). Every administrative crumb carries its production deep
+ * link `/v3/citymeter/{province}[/D/{district} | /S/{subdistrict}]`; production has no pharmacy dataset yet, so the
+ * links carry no `d` parameter. A store is the panel heading, never a crumb — its crumbs are its own matched
+ * subdistrict, district and province (a row placed only at district or province level stops there).
  */
-import {provinceByCode, productionLink} from './model.js';
-import {levelWords} from './areas.js';
+import {provinceByCode} from './model.js';
+import {areaWord, levelWords} from './areas.js';
+import {buildBreadcrumb as shellBreadcrumb, renderBreadcrumb, breadcrumbText, deepestHref} from './shell/breadcrumb.js';
 
-const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+/** Production carries no pharmacy dataset yet: crumbs link the place alone (no `?d=`). */
+const PRODUCTION_DATASET = '';
+const subWord = province => levelWords(province).area;
 
-/** Pure model. province = production code or ''; district/area = index records or null. */
-export function buildBreadcrumb({province = '', district = null, area = null} = {}) {
-  const crumbs = [{level: 'country', label: 'ประเทศไทย', action: 'crumb-country', href: productionLink()}];
-  const code = area?.province || district?.province || province || '';
-  const p = provinceByCode(code);
-  if (p) crumbs.push({level: 'province', label: p.th, id: p.code, action: 'crumb-province', href: productionLink({province: p.code})});
-  const w = levelWords(code);
-  if (area) {
-    crumbs.push({level: 'district', label: `${w.district}${area.districtName}`, id: area.district, action: 'crumb-district', href: productionLink({province: code, district: area.district})});
-    crumbs.push({level: 'area', label: `${w.area}${area.name}`, id: area.id, action: 'crumb-area', href: productionLink({province: code, area: area.id})});
-  } else if (district) {
-    crumbs.push({level: 'district', label: `${w.district}${district.name}`, id: district.id, action: 'crumb-district', href: productionLink({province: code, district: district.id})});
-  }
-  crumbs[crumbs.length - 1].current = true;
-  return crumbs;
-}
-
-/**
- * HTML for the panel header; the last crumb is the current level (aria-current).
- * With four or more levels the upper ones fold behind “…” on narrow screens.
- */
-export function renderBreadcrumb(crumbs) {
-  const collapsible = crumbs.length >= 4;
-  const items = crumbs.map((c, i) => {
-    const fold = collapsible && i < crumbs.length - 2;
-    const inner = c.current
-      ? `<span class="crumb is-current" aria-current="location">${esc(c.label)}</span>`
-      : `<button type="button" class="crumb" data-action="${esc(c.action)}" data-id="${esc(c.id || '')}">${esc(c.label)}</button>`;
-    return `<li${fold ? ' class="is-collapsible"' : ''}>${inner}</li>`;
-  });
-  if (collapsible) items.splice(crumbs.length - 2, 0, '<li class="crumb-ellipsis"><button type="button" class="crumb crumb-more" data-action="crumb-expand" aria-expanded="false" aria-label="แสดงระดับบน">…</button></li>');
-  return `<ol class="crumbs${collapsible ? ' is-collapsible' : ''}">${items.join('')}</ol>`;
-}
-
-/** Compact text form for the mobile map card and the document title. */
-export const breadcrumbText = crumbs => crumbs.map(c => c.label).join(' › ');
+/** Pure model. province = production code or ''; district = a district record, area = a subdistrict record, or null. */
+export const buildBreadcrumb = ({province = '', district = null, area = null} = {}) =>
+  shellBreadcrumb({province, area: area ? null : district, sub: area}, {dataset: PRODUCTION_DATASET, provinceByCode, areaWord: p => levelWords(p).district, subWord});
+export {renderBreadcrumb, breadcrumbText};
 
 /** Production deep link of the deepest administrative crumb (for “ดูใน CityMETER”). */
-export const productionHref = crumbs => [...crumbs].reverse().find(c => c.href)?.href || productionLink();
+export const productionHref = crumbs => deepestHref(crumbs, PRODUCTION_DATASET);

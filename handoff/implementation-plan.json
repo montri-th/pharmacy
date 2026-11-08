@@ -3,7 +3,7 @@
   "schemaVersion": "1.5.0",
   "documentType": "implementation-plan",
   "productId": "citymeter-pharmacy",
-  "productVersion": "0.1.1",
+  "productVersion": "0.2.0",
   "updatedOn": "2026-10-23",
   "brief": "product-brief.json",
   "statement": "product-statement.json",
@@ -111,7 +111,7 @@
         "role": "density bars / group matrix / quality share bars as HTML, no chart vendor"
       },
       {
-        "path": "js/navigation.js · js/launch.js",
+        "path": "js/navigation.js · js/shell/launch.js",
         "role": "nav-7 glyphs and help dialog (toolbar opener; sheet opener on phones); launch/slow/error overlay and file:// bridge"
       },
       {
