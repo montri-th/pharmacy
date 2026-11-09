@@ -21,7 +21,7 @@ if (LANG === 'en') {
     const p = document.createElement('p');
     p.id = 'draft-english-note';
     p.className = 'help-intro';
-    p.textContent = 'English is a draft translation from the Thai. Pharmacy names stay as their sources write them, and so does a place name with no English in the data. KhY1 is the licence to sell modern medicines in the FDA register. The product statement is in Thai.';
+    p.textContent = 'English is a draft translation from the Thai. Pharmacy names and licence numbers stay as their sources write them, and so does a place name with no English in the data. KhY1 is the licence to sell modern medicines in the FDA register. The product statement is in Thai.';
     intro.after(p);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', note, {once: true}); else note();
@@ -67,8 +67,9 @@ export function registerDataNames({index, data}) {
   }
   const pairs = [];
   for (const [th, en] of english) { if (en) pairs.push([th, en]); else thai.add(th); }
-  // As the sources write them: pharmacy names (rows without a name read “no name in the source”, a dictionary phrase).
-  for (const r of data?.rows || []) if (r.name && THAI.test(r.name)) thai.add(r.name);
+  // As the sources write them: pharmacy names (rows without a name read “no name in the source”, a dictionary phrase)
+  // and the FDA licence numbers (“ขย1 กท 101/2565”: an identifier of the register, never rewritten).
+  for (const r of data?.rows || []) for (const v of [r.name, r.licence]) if (v && THAI.test(v)) thai.add(v);
   registerNames(pairs);
   keepThai([...thai].filter(th => !english.get(th)));
 }

@@ -446,14 +446,15 @@ export default {
       (m, t) => `${t.name(m[1])}: ${m[2]} of ${units(t, m[3], m[4])} on the Quality Pharmacy list (${m[5]}%), select to view this area`],
     // Overview (the first finding)
     [re(`กำลังสำรวจ ${N} ${W}`), (m, t) => `Exploring ${areas(t, m[1], m[2])}`],
-    [re(`ร้านยาแน่นที่สุดใน ${N} ${W}นี้`), (m) => `where pharmacies are densest: ${these(m[1], m[2])}`],
+    [re(`ร้านยาแน่นที่สุดใน ${N} ${W}นี้`), (m) => `densest in ${these(m[1], m[2])}`],
     [re(`ของ${U}ตามตัวกรองอยู่ใน ${N} ${W}นี้`), (m) => `of the ${unitWord(m[1])} matching the filters are in ${these(m[2], m[3])}`],
     [re(`${U}ตามตัวกรอง — ยังระบุตำบลไม่ได้`), (m) => `${unitWord(m[1])} match the filters — not yet located to a subdistrict`],
     [re(`แหล่งข้อมูลระบุที่ตั้งของ${U}เหล่านี้ได้ถึงอำเภอหรือจังหวัดเท่านั้น จึงยังจัดอันดับตำบลไม่ได้`), (m) => `The sources locate these ${unitWord(m[1])} only to a district or a province, so subdistricts cannot be ranked yet`],
     [re(`โฟกัส ${N} ${W}นี้`), (m) => `Focus on ${these(m[1], m[2])}`],
     [re(`จัดอันดับเฉพาะพื้นที่ที่มีอย่างน้อย ${N} ${U}`), (m, t) => `only areas with at least ${units(t, m[1], m[2])} are ranked`],
     [/^นอก(.+) (แน่นที่สุด|มากที่สุด):$/, (m, t) => `${m[2] === 'แน่นที่สุด' ? 'Densest' : 'Most'} outside ${t.name(m[1])}:`],
-    [/^ทั้ง(.+)$/, (m, t) => { const p = t.known(m[1]); return p ? `all of ${p}` : null; }],
+    // The first finding's baseline (“· ทั้งกรุงเทพมหานคร 2.1 ร้าน/ตร.กม.”): “· all of Bangkok: 2.1 pharmacies/km²”.
+    [/^ทั้ง(.+)$/, (m, t) => { const p = t.known(m[1]); return p ? `all of ${p}:` : null; }],
     [re(`ใน ${N} พื้นที่ที่แน่นที่สุด`), (m) => (m[1] === '1' ? 'in the densest area' : `in the ${m[1]} densest areas`)],
     [re(`([\\d,]+%) ของ${U}อยู่ใน ${N} พื้นที่`), (m, t) => `${m[1]} of the ${unitWord(m[2])} are in ${plural(t, m[3], 'area', 'areas')}`],
     [re(`ของ${U}อยู่ใน ${N} พื้นที่`), (m, t) => `of the ${unitWord(m[1])} are in ${plural(t, m[2], 'area', 'areas')}`],
