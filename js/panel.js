@@ -16,6 +16,7 @@ import {productionLink, provinceByCode, hasPoint, EVIDENCE_LABEL, EVIDENCE_SHORT
 import {areaWord, districtWord} from './areas.js';
 import {buildCountClasses, classify as classifyValue} from './scales.js';
 import {cueMarkup, QUALITY_SERIES, seriesOf} from './cues.js';
+import {LANG} from './shell/i18n.js';
 
 const NUMBER = new Intl.NumberFormat('th-TH', {maximumFractionDigits: 0});
 const DEC1 = new Intl.NumberFormat('th-TH', {minimumFractionDigits: 1, maximumFractionDigits: 1});
@@ -55,6 +56,11 @@ export function metricTile(value, label, kind = '') {
 export const heading = (kind, text, id = '') => `<h3${id ? ` id="${esc(id)}"` : ''}><i class="pictogram pic-${esc(kind)}" aria-hidden="true"></i>${esc(text)}</h3>`;
 
 const provinceName = code => provinceByCode(code)?.th || code || '';
+/** The line under a place heading: its English name on a Thai page; on an English page (the heading reads the English
+ * name) its Thai name, marked as Thai and left alone. */
+const subName = (thai, english) => (LANG === 'en'
+  ? (english ? `<p class="subtle" lang="th" translate="no">${esc(thai)}</p>` : '')
+  : (english ? `<p class="subtle">${esc(english)}</p>` : ''));
 const sourceOf = (ctx, id) => (ctx.sources || []).find(s => s.id === id) || {};
 
 /**
@@ -243,7 +249,7 @@ export function renderDistrict(p, classOf, ctx = {}) {
   const head = `<section class="detail-head">
       <button type="button" class="btn quiet back" data-action="back">กลับ</button>
       <p class="eyebrow">${esc(w.district)} · ${esc(provinceName(d.province))} · ${esc(rankText)}</p>
-      <h2>${esc(w.district)}${esc(d.name)}</h2>${d.nameEn ? `<p class="subtle">${esc(d.nameEn)}</p>` : ''}
+      <h2>${esc(w.district)}${esc(d.name)}</h2>${subName(`${w.district}${d.name}`, d.nameEn)}
       <div class="metrics compact">${metricTile(p.count, unit.one, 'store')}${metricTile(dens(p.density), unit.density, 'gla')}${metricTile(p.quality, 'ร้านยาคุณภาพ', 'exclusive')}${metricTile(`${num(ranked.length)}/${num(p.areaTotal)}`, `${w.area}ที่มี${unit.one}`, 'area')}</div>
       ${selectionNote(p, place, ctx)}
       <p class="hint">${km(p.km2 || 0)} ตร.กม. · ความหนาแน่น = ${esc(unit.one)} ÷ พื้นที่ตามขอบเขต CityMETER${p.unplaced ? ` · รวม ${num(p.unplaced)} ${esc(unit.one)}ที่ระบุ${esc(w.area)}ไม่ได้ (ไม่อยู่ในสีของ${esc(w.area)}ใด)` : ''}</p>
@@ -269,7 +275,7 @@ export function renderArea(p, ctx = {}) {
   const head = `<section class="detail-head">
       <button type="button" class="btn quiet back" data-action="back">กลับ</button>
       <p class="eyebrow">${esc(w.area)} · <button type="button" class="link-button" data-action="select-district" data-id="${esc(a.district)}">${esc(w.district)}${esc(a.districtName)}</button> · ${esc(provinceName(a.province))}${rankText ? ` · ${esc(rankText)}` : ''}</p>
-      <h2>${esc(w.area)}${esc(a.name)}</h2>${a.nameEn ? `<p class="subtle">${esc(a.nameEn)}</p>` : ''}
+      <h2>${esc(w.area)}${esc(a.name)}</h2>${subName(`${w.area}${a.name}`, a.nameEn)}
       <div class="metrics compact">${metricTile(p.count, unit.one, 'store')}${metricTile(dens(p.density), unit.density, 'gla')}${metricTile(p.quality, 'ร้านยาคุณภาพ', 'exclusive')}${metricTile(`${num(p.points)}/${num(p.count)}`, 'มีพิกัดจากแหล่ง', 'area')}</div>
       ${selectionNote(p, place, ctx)}
       <p class="hint">${km(p.km2 || 0)} ตร.กม. · ความหนาแน่น = ${esc(unit.one)} ÷ พื้นที่ตามขอบเขต CityMETER${p.unplacedInDistrict ? ` · ไม่รวม ${num(p.unplacedInDistrict)} ${esc(unit.one)}ใน${esc(w.district)}${esc(a.districtName)}ที่ระบุ${esc(w.area)}ไม่ได้` : ''}</p>

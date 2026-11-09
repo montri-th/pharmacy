@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
+  <!-- Languages this page carries (citymeter-shell, js/shell/i18n.js): Thai is the source; ?lang=en reads it in English. -->
+  <meta name="citymeter:languages" content="th en">
+  <link rel="alternate" hreflang="th" href="https://montri-th.github.io/pharmacy/">
+  <link rel="alternate" hreflang="en" href="https://montri-th.github.io/pharmacy/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://montri-th.github.io/pharmacy/">
   <title>Pharmacy · CityMETER</title>
   <meta name="description" content="ร้านยาแน่นที่สุดอยู่ตรงไหน และเป็นร้านแบบไหน — แผนที่ 3 มิติของร้านยาที่มีใบอนุญาต ขย1 ทั่วประเทศ ระดับแขวง/ตำบล พร้อมที่มาของทุกตัวเลข">
   <meta name="theme-color" content="#F6F7F3" media="(prefers-color-scheme: light)">
@@ -24,7 +29,7 @@
     .launch-card :focus-visible{outline:3px solid var(--interaction-focus-ring,#176B82);outline-offset:3px}
     @media(max-width:420px){#launch-status{padding:16px}.launch-card{padding:20px}.launch-card h2{font-size:21px}}
   </style>
-  <script src="js/shell/launch.js?v=20261109-r6" data-public="https://montri-th.github.io/pharmacy/" data-name="Pharmacy" data-reading="ร้านยา" data-boundary="แขวง/ตำบล"></script>
+  <script src="js/shell/launch.js?v=20261109-r6" data-public="https://montri-th.github.io/pharmacy/" data-name="Pharmacy" data-reading="ร้านยา" data-boundary="แขวง/ตำบล" data-reading-en="pharmacy data" data-boundary-en="subdistrict boundaries"></script>
   <link rel="icon" href="assets/icons/icon-portfolio-32.png" sizes="32x32">
   <link rel="icon" href="assets/icons/icon-portfolio-16.png" sizes="16x16">
   <link rel="icon" href="assets/icons/icon-portfolio-48.png" sizes="48x48">
@@ -50,6 +55,8 @@
       "./js/cues.js": "./js/cues.js?v=20261109-r6",
       "./js/frames.js": "./js/frames.js?v=20261109-r6",
       "./js/geometry.js": "./js/geometry.js?v=20261109-r6",
+      "./js/lang.js": "./js/lang.js?v=20261109-r6",
+      "./js/lang-en.js": "./js/lang-en.js?v=20261109-r6",
       "./js/map-layers.js": "./js/map-layers.js?v=20261109-r6",
       "./js/map-style.js": "./js/map-style.js?v=20261109-r6",
       "./js/massing.js": "./js/massing.js?v=20261109-r6",
@@ -103,6 +110,7 @@
         <option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option>
       </select>
     </label>
+    <a class="lang-link" href="?lang=en" hreflang="en" lang="en" translate="no" title="Read in English (draft translation)">EN</a>
   </div>
 </header>
 
