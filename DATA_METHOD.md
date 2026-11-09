@@ -12,6 +12,7 @@
 | เครือร้าน | หน้าค้นหาสาขาและหน้าทางการของ 32 เครือที่ชีตวิจัยยืนยันขอบเขตแล้ว (`01_BRANDS`) | ตรวจ 22 ต.ค. 2569 | `brands[]`, `sources[CHAIN_SOURCES]` |
 | ชีตที่รวมทั้งหมด | “CityMETER Pharmacy Thailand — Research Master 2026-10-22” แท็บ `02_STORES` (ไฟล์ภายใน ไม่อยู่ใน repository; SHA-256 ของไฟล์ที่ใช้สร้างอยู่ใน `meta.sheetSha256`) | 22 ต.ค. 2569 | `data/pharmacies.json` |
 | ขอบเขตแขวง/ตำบล เขต/อำเภอ จังหวัด | CityMETER production public API (`/base/info/lv0`, `/base/info/lv1/{province uuid}`, `/base/info/geom/{uuid}/SUBDISTRICT`) | 23 ต.ค. 2569 | `data/area-index.json`, `data/frames/{CODE}.json`, `data/provinces.geojson`, `data/boundary-receipts.json` |
+| ชื่ออังกฤษของเขต/อำเภอ และของแขวง/ตำบลที่ production ไม่มีชื่ออังกฤษ | OpenGISData-Thailand `districts.geojson` / `subdistricts.geojson` @ `fafcea1` (CC BY 4.0, อ้าง DOPA) — ใช้อ่านชื่อในหน้าภาษาอังกฤษ ไม่ใช้เป็นขอบเขต | ตาม commit | `data/area-index.json → metadata.englishNames`, `metadata.subdistrictEnglishFromOgd` |
 | แผนที่ฐานและมวลอาคารเมือง | OpenFreeMap (OpenMapTiles schema, © OpenStreetMap contributors) | โหลดตอนเปิดหน้า | ไม่มีไฟล์ใน repository |
 
 **สถานะของชีต (Observed fact, `meta.sheetStatus = research_only`):** ชีตเป็น research master ที่ทีมวิจัยระบุว่ายังต้องตรวจตัวตน สถานะ พิกัด ความซ้ำ และสิทธิ์ข้อมูลตามการใช้งาน เดโมนี้เผยแพร่ตามคำขอของเจ้าของเพื่อทดลองผลิตภัณฑ์ ไม่ใช่การรับรองว่าข้อมูลพร้อมใช้เชิงพาณิชย์ — การตรวจสิทธิ์การใช้ข้อมูลของแต่ละแหล่งอยู่ใน backlog (N02)
@@ -67,6 +68,7 @@
 - ทำให้เบาสำหรับเว็บด้วย mapshaper `-simplify interval=30 keep-shapes -clean` ครั้งเดียวทั้งประเทศ (คง topology) แล้วแยกเป็นไฟล์ละจังหวัด `data/frames/{CODE}.json` (`areas` + `districts` ที่ dissolve จากแขวง/ตำบล) จังหวัด dissolve แล้วทำให้เบาที่ 250 ม. สำหรับมุมมองประเทศ (`scripts/build-boundaries.py`)
 - **ดัชนีพื้นที่** `data/area-index.json` เก็บชื่อ รหัส พื้นที่ จุดป้าย และกรอบของทุกพื้นที่โดยไม่มีเรขาคณิต อันดับ แผง กราฟ และการตั้งกล้องจึงทำงานได้ทันที ขอบเขตโหลดทีละจังหวัดเมื่อจำเป็น (`js/frames.js`)
 - **พื้นที่ (ตร.กม.)** มาจาก `areaSqm` ของ production — ไม่คำนวณใหม่จากเส้นที่ทำให้เบา
+- **ชื่ออังกฤษ** production ให้ชื่ออังกฤษของจังหวัดทั้ง 77 และแขวง/ตำบล 7,146 จาก 7,436 แห่ง แต่ไม่มีของเขต/อำเภอเลย `scripts/add-english-names.py` เติมจาก OpenGISData-Thailand @ `fafcea1` (ตรวจ SHA-256 ของไฟล์ก่อนใช้): เขต/อำเภอตามรหัส 927 จาก 928 (เหมือนเดโมระดับเขต/อำเภออื่นของ CityMETER) และแขวง/ตำบลที่ production ไม่มีชื่อ เฉพาะเมื่อรหัสและชื่อไทยตรงกัน 253 แห่ง (หลักเดียวกับ Fitness) ชื่ออังกฤษของ production คงไว้เสมอ ยังไม่มีชื่ออังกฤษ 37 แขวง/ตำบล (ส่วนใหญ่เป็นแขวงที่ตั้งใหม่ในกรุงเทพฯ) และอำเภอเวียงเก่า หน้าอังกฤษจึงแสดงชื่อไทยของพื้นที่เหล่านี้ ชื่อเป็นตัวช่วยอ่าน ไม่ใช่ชื่อทางการที่ยืนยันแล้ว
 - กรอบเป็น navigation และตัวหารของความหนาแน่น ไม่ใช่การยืนยันเขตปกครองทางกฎหมาย
 
 ## 6. ตัวชี้วัด
@@ -124,6 +126,8 @@
 ```sh
 # ขอบเขต (อินพุต: base info + geometry responses + .meta.json receipts ที่ดึงจาก API สาธารณะ)
 python3 -I scripts/build-boundaries.py --api <api-dir> --geom <geom-dir> --out . --mapshaper <path-to-mapshaper>
+# ชื่ออังกฤษที่ production ไม่มี (อินพุต: districts.geojson + subdistricts.geojson ของ OpenGISData-Thailand ที่ commit fafcea1)
+python3 -I scripts/add-english-names.py --ogd <ogd-dir>
 # ร้าน (อินพุตภายใน: xlsx ของชีตวิจัย)
 python3 -I scripts/build-data.py --sheet <sheet.xlsx> --api <api-dir> --geom <geom-dir> --index data/area-index.json --out .
 ```

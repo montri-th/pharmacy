@@ -73,7 +73,7 @@ handoff/              Product Brief, Implementation Plan, Verification, JSON + s
 
 - สีทุกค่าตรง LDS 0.9.7 (`v0.9.7-owner.1`, `color-srgb-10`, SHA-256 `d3085cbc…96`) — ตรวจด้วย `npm run check:lds` กับไฟล์ LDS ต้นฉบับ (ไฟล์ LDS ไม่อยู่ใน repository) ผลบันทึกใน [handoff/VERIFICATION.md](handoff/VERIFICATION.md)
 - ฟอนต์และไอคอนจาก LDS build kit (`assets/lds/build-kit/`), ไอคอน nav-7 และ pictogram 8 ตัว (Apache-2.0)
-- ขอบเขตจาก CityMETER production (ใบรับ 7,514 ใบใน `data/boundary-receipts.json`); อาคาร © OpenStreetMap contributors (ODbL 1.0); basemap © OpenFreeMap / OpenMapTiles / OpenStreetMap
+- ขอบเขตจาก CityMETER production (ใบรับ 7,514 ใบใน `data/boundary-receipts.json`); อาคาร © OpenStreetMap contributors (ODbL 1.0); basemap © OpenFreeMap / OpenMapTiles / OpenStreetMap; ชื่ออังกฤษของเขต/อำเภอและบางแขวง/ตำบล OpenGISData-Thailand (CC BY 4.0, อ้าง DOPA)
 - ข้อมูลร้านจากแหล่งสาธารณะ: ทะเบียน ขย1 ของ อย. (open data catalogue), รายชื่อของสภาเภสัชกรรม, หน้าสาขาของเครือ — สิทธิ์การใช้ของแต่ละแหล่งยังไม่ได้ตรวจ (DATA_METHOD §11)
 - `npm run handoff:manifest` สร้าง hash ของทุกไฟล์ · `npm run verify:live` เทียบไบต์บนเว็บจริงกับ manifest
 

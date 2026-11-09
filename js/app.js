@@ -39,6 +39,7 @@
  * grammar d · at · e · m · f.* · focus · view · v3d by citymeter-shell (js/shell/url.js), with a browser history
  * entry per level (the back button goes up a level).
  */
+import {registerDataNames} from './lang.js';
 import {provinces as provinceList, provinceByCode, provinceCodeFrom, setProvinces, decodeDataset, filterRows, summarize, hasPoint, unitWords, productionLink, EVIDENCE_SHORT} from './model.js';
 import {buildAreaIndex, areaWord, districtWord, areaLocator, recordBounds} from './areas.js';
 import {summarizeAreaInsight, filterAreaRows, MIN_AREA_ROWS} from './area-insight.js';
@@ -1265,6 +1266,7 @@ async function init() {
     state.index = buildAreaIndex(indexJSON);
     state.provincesGeo = validFeatureCollection(provincesJSON) ? provincesJSON : {type: 'FeatureCollection', features: []};
     state.data = decodeDataset(rowsJSON, state.index);
+    registerDataNames({index: state.index, data: state.data});
     if (state.data.dropped) console.warn('Rows outside the area index', state.data.dropped);
     state.rowById = new Map(state.data.rows.map(r => [r.id, r]));
     state.frames = createFrameStore({index: state.index, fetchJSON, version: RELEASE, onLoad: onFramesLoaded,
