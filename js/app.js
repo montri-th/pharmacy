@@ -1059,7 +1059,7 @@ function initMap() {
     state.map.on('click', onMapClick);
     state.map.on('mousemove', onMapMove);
     state.map.on('error', e => console.warn('Map resource', e.error?.message || e));
-    fetch(TILEJSON_URL).then(r => r.json()).then(j => { state.tileTemplate = j.tiles?.[0] || ''; if (state.loaded) updateSpatialLayers(); }).catch(e => console.warn('TileJSON', e));
+    fetch(TILEJSON_URL).then(r => r.json()).then(j => { state.tileTemplate = j.tiles?.[0] || ''; if (state.loaded) updateSpatialLayers(); }).catch(e => { partial('basemap'); console.warn('TileJSON', e); });
   } catch (e) {
     state.loaded = false; state.initialCameraDone = false;
     for (const cleanup of [() => state.attribObserver?.disconnect(), () => state.labels?.dispose(), () => state.provinceLabels?.dispose(), disposeSpatial, () => state.map?.remove()]) { try { cleanup(); } catch (err) { console.warn('Map cleanup', err); } }
@@ -1252,12 +1252,28 @@ function wireEvents() {
   matchMedia('(max-width: 760px) and (orientation: portrait)').addEventListener?.('change', () => { if (!mobilePortrait()) $('panel').classList.remove('is-open'); renderPanel(); });
 }
 
+/**
+ * A part of the data that did not load is said on the page (citymeter-shell 0.6.0, js/shell/launch.js
+ * `citymeter:partial`): what is missing and what that does to the result on screen, with a reload that keeps the
+ * address. The words live here, by file: [Thai name, Thai effect, English name, English effect].
+ */
+const PARTIAL = {
+  'data/provinces.geojson': ['กรอบจังหวัด', 'แผนที่ไม่แสดงขอบจังหวัด', 'Province outlines', 'The map shows no province outlines'],
+  'frames': ['เส้นขอบเขต/อำเภอ', 'บางจังหวัดไม่แสดงเส้นขอบเขต/อำเภอบนแผนที่', 'District outlines', 'Some provinces show no district outlines on the map'],
+  'basemap': ['แผนที่ฐาน', 'ถนน แหล่งน้ำ และอาคารพื้นหลังอาจไม่แสดง ข้อมูลในแผงและตารางยังใช้ได้', 'Basemap', 'Roads, water and background buildings may be missing; the panel and the table still work'],
+};
+function partial(key) {
+  const words = PARTIAL[key];
+  if (!words || typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('citymeter:partial', {detail: {id: key, label: words[0], effect: words[1], labelEn: words[2], effectEn: words[3]}}));
+}
+
 async function init() {
   try {
     const [rowsJSON, indexJSON, provincesJSON] = await Promise.all([
       fetchJSON('data/pharmacies.json', {timeout: 45000}),
       fetchJSON('data/area-index.json', {timeout: 30000}),
-      fetchJSON('data/provinces.geojson', {timeout: 30000}).catch(e => { console.warn('Province frames unavailable', e); return null; }),
+      fetchJSON('data/provinces.geojson', {timeout: 30000}).catch(e => { partial('data/provinces.geojson'); console.warn('Province frames unavailable', e); return null; }),
     ]);
     if (!Array.isArray(indexJSON?.provinces) || !indexJSON.provinces.length || !Array.isArray(indexJSON?.areas?.id)) {
       const e = new Error('Invalid area index'); e.resource = 'data/area-index.json'; e.phase = 'data-schema'; throw e;
@@ -1270,7 +1286,7 @@ async function init() {
     if (state.data.dropped) console.warn('Rows outside the area index', state.data.dropped);
     state.rowById = new Map(state.data.rows.map(r => [r.id, r]));
     state.frames = createFrameStore({index: state.index, fetchJSON, version: RELEASE, onLoad: onFramesLoaded,
-      onError: (code, e) => { console.warn('Province outlines unavailable', code, e); $('map-status').dataset.framesError = code; }});
+      onError: (code, e) => { partial('frames'); console.warn('Province outlines unavailable', code, e); $('map-status').dataset.framesError = code; }});
 
     refreshOptionCounts();
     restoreFromURL();
