@@ -189,6 +189,7 @@ export default {
     // Panel: search and filters
     'เส้นทางพื้นที่: ประเทศไทย › จังหวัด › เขต/อำเภอ › แขวง/ตำบล': 'Area path: Thailand › Province › District › Subdistrict',
     'ค้นหาร้านยา เครือร้าน เลขใบอนุญาต หรือพื้นที่': 'Search pharmacies, chains, licence numbers or areas',
+    'ลองชื่อร้านยา เครือร้าน เลขใบอนุญาต แขวง/ตำบล เขต/อำเภอ หรือจังหวัด': 'Try the name of a pharmacy, a chain, a licence number, a subdistrict, a district or a province',
     'ค้นหารายการ เครือร้าน เลขใบอนุญาต หรือพื้นที่': 'Search records, chains, licence numbers or areas',
     'ค้นหาชื่อร้านยา เครือร้าน เลขใบอนุญาต แขวง/ตำบล หรือเขต/อำเภอ': 'Search pharmacy names, chains, licence numbers, subdistricts or districts',
     'ตัวกรอง': 'Filters',
@@ -359,6 +360,8 @@ export default {
     'ประเทศไทย': 'Thailand',
   },
   contexts: [
+    // The line under a name in the search list (js/find.js#searchNote): one entry, so the singular.
+    ['.find-where', {'เครือร้าน': 'Chain', 'ประเภทร้าน': 'Pharmacy type', 'จังหวัด': 'Province'}],
     // A tile's label under its number (js/panel.js#metricTile): "1 pharmacy", "12 pharmacies".
     ['.metric > span:not([class])', {
       'ร้าน': count('pharmacy', 'pharmacies'), 'รายการ': count('record', 'records'),
