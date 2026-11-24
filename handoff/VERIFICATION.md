@@ -105,3 +105,7 @@ Chrome ของเจ้าของ แผนที่ฐานและมว
 
 - merge PR #18 → `c8b6bf3` · deploy run 45352962191: 114/114 live checks · pharmacy key OK · `npm run verify:live`: 212 ok · 0 ไม่ตรง
 - citymeter.pages.dev ในเบราว์เซอร์ในแอป Claude: แท็ก `20261124-r2` · ชิปเครือร้าน 12 ชิปบนหน้าแรก 11 ชิปมีโลโก้และโหลดครบ · ชิปที่ไม่มีโลโก้คือ Tsuruha (ป้ายเครือร่วม)
+
+## 12. รุ่น 0.5.2 — Tsuruha ตามข้อยกเว้นของเจ้าของ (`20261124-r3`) — local
+
+- ไฟล์ Tsuruha ดาวน์โหลดผ่าน Google Drive connector ตรง SHA-256 ของ manifest ของคลัง · `attach-family-logos.py` (ศูนย์การค้าที่ `bb07800`): 32 จาก 32 เครือมีโลโก้ (own 16 · library 15 · same-id 1) · Tsuruha อ่านได้บนพื้นสว่าง

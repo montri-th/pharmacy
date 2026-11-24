@@ -5,7 +5,7 @@
   "checkedOn": "2026-11-24",
   "dataset": "research.TH.pharmacy",
   "brands": 32,
-  "withLogo": 31,
+  "withLogo": 32,
   "rule": "D64 of CityMETER · Shopping Center (owner 2026-11-24): own id → the same id in another dataset → a name a research sheet confirmed → one fixed rewrite; two different files give none",
   "rights": "เครื่องหมายเป็นของเจ้าของแต่ละราย การแสดงเพื่อระบุเครือร้านไม่ใช่ใบอนุญาตเครื่องหมายการค้า",
   "pool": {
@@ -38,8 +38,8 @@
     "files": 15
    },
    "shoppingcenter": {
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
-    "files": 456
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
+    "files": 462
    }
   },
   "library": {
@@ -47,16 +47,10 @@
    "checkedOn": "2026-11-09",
    "manifestSha256": "d1c471759cba36a318517a114f13157338f6b3a038c6be23e12b390b114614e3",
    "mappings": 32,
-   "usable": 31,
-   "used": 14
+   "usable": 32,
+   "used": 15
   },
-  "without": [
-   {
-    "id": "PHB-b96442c37e0896c5",
-    "name": "Tsuruha",
-    "reason": "none"
-   }
-  ]
+  "without": []
  },
  "logos": {
   "PHB-094826b42cd5691a": {
@@ -70,7 +64,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/ec9a8e0cb4883ab32013.png"
    }
   },
@@ -85,7 +79,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/79f3c3a7122948541fac.svg"
    }
   },
@@ -130,7 +124,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/0ce2071c5575151878ad.png"
    }
   },
@@ -175,7 +169,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/7aa1a50d93cf66b9c58b.png"
    }
   },
@@ -205,7 +199,7 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/62d5bfddb12c22211a06.png"
    }
   },
@@ -235,7 +229,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/e3785243263cddf91495.jpg"
    }
   },
@@ -265,7 +259,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/1ec891937cbb7c59ae8e.jpg"
    }
   },
@@ -280,7 +274,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/0f0555644a4edb38b09f.png"
    }
   },
@@ -310,7 +304,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/287a9650b56b68d1d91b.png"
    }
   },
@@ -325,7 +319,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/292b5bd7fd6d2952c788.png"
    }
   },
@@ -355,8 +349,23 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/80ed877ff629539f1c2e.svg"
+   }
+  },
+  "PHB-b96442c37e0896c5": {
+   "name": "Tsuruha",
+   "file": "assets/brand-logos/4f9bb92db0f867f4dee0.svg",
+   "sha256": "4f9bb92db0f867f4dee0172fecd16497b666fef9c378828aaef0a5e2812bd20a",
+   "mime": "image/svg+xml",
+   "width": 210.812,
+   "height": 40.0,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.tsuruha.co.jp/service/thailand/"
    }
   },
   "PHB-c0af37b518215772": {
@@ -370,7 +379,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/acc00e79c66e53f41443.png"
    }
   },
@@ -385,7 +394,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/0785222596af06dd9b7d.png"
    }
   },
@@ -400,7 +409,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/48e39ce5da133ad399b9.jpg"
    }
   },
@@ -415,7 +424,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/86fcaacb78096394fa64.png"
    }
   },
@@ -475,7 +484,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/d8758aceaf1d10e3046c.svg"
    }
   },
@@ -520,7 +529,7 @@
    "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "commit": "bb078006d90227d7c95f63905230b9fcba9d1944",
     "path": "assets/tenant-logos/c5d8824e7ffca293a6a6.jpg"
    }
   }
