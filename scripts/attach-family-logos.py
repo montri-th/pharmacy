@@ -36,6 +36,11 @@ DATASET = 'research.TH.pharmacy'
 EXT = {'image/svg+xml': 'svg', 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif'}
 
 
+# Owner 2026-11-24 16:48, VERBATIM: “Tsuruha, True Shop, OPPO, Vivo, iStudio, Nintendo, LEGO ใช้โลโก้ที่มีไปเลย ผมยกเว้นให้”:
+# Tsuruha's library file is a shared chain banner; the owner allows it as the chain's logo. Only this id.
+OWNER_ROLE_EXCEPTIONS = {'PHB-b96442c37e0896c5': 'Tsuruha'}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--family', required=True)
@@ -49,7 +54,7 @@ def main():
         assets = {x['asset_id']: x for x in man.get('assets', [])}
         for m in man.get('mappings', []):
             x = assets.get(m.get('asset_id'))
-            if x and m.get('result') == 'collected' and m.get('logo_role') == 'brand_primary':
+            if x and m.get('result') == 'collected' and (m.get('logo_role') == 'brand_primary' or m.get('entity_id') in OWNER_ROLE_EXCEPTIONS):
                 library[m['entity_id']] = x
         for f in sorted(Path(a.files).iterdir()) if a.files else []:
             if f.is_file():
