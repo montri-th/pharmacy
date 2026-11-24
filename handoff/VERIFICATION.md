@@ -94,3 +94,9 @@ Chrome ของเจ้าของ แผนที่ฐานและมว
 - citymeter.pages.dev: montri-th/citymeter-pages-deploy run 45318129145 สำเร็จ “114 / 114 live checks passed”
 - Headless Chrome บน GitHub Pages 1,440 px (แผนที่ฐานถูก proxy ของตู้ทำงานกั้น): ชิปเครือร้านของกรุงเทพฯ แสดงโลโก้ Boots (`287a9650b56b68d1d91b.png`) และ Watsons (`ec9a8e0cb4883ab32013.png`) · `__citymeterI18n.missing` 0
 - ยังไม่ได้ตรวจด้วยตาใน Chrome ของเจ้าของบน citymeter.pages.dev: ส่วนขยาย Claude in Chrome ไม่ได้เชื่อมต่อระหว่างตรวจ
+
+## 10. รุ่น 0.5.1 — โลโก้เครือจากคลังโลโก้ของ Pharmacy (`20261124-r2`) — local
+
+- manifest ของคลังโลโก้ Pharmacy (ตรวจ 9 พ.ย. 2569, 32 แถว) · ดาวน์โหลด 27 ไฟล์ brand_primary ที่ยังไม่มีผ่าน Google Drive connector ตรง SHA-256 ของ manifest ทุกไฟล์
+- `python3 -I scripts/attach-family-logos.py --family /home/claude --checked-on 2026-11-24 --library … --files …` (ศูนย์การค้าที่ `fa973d1`): 31 จาก 32 เครือมีโลโก้ (own 16 · library 14 · same-id 1) · Tsuruha ไม่มี (ป้ายเครือร่วม)
+- contact sheet 31 โลโก้บนพื้นมืด: อ่านได้บนพื้นรองทุกเครือ

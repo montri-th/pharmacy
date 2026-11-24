@@ -34,13 +34,18 @@ test('every chain logo is a verified file of a chain of this dataset, and every 
     assert.match(r.file, /^assets\/brand-logos\/[a-f0-9]{20}\.(svg|png|jpe?g|webp|gif)$/);
     assert.equal(sha(readFileSync(join(ROOT, r.file))), r.sha256, r.file);
     assert.ok(['#E5E9E6', '#FFFFFF', '#182327'].includes(r.background), `${id}: plate ${r.background}`);
-    assert.ok(['own', 'same-id', 'label', 'bilingual', 'legal', 'descriptor', 'bank'].includes(r.basis), `${id}: ${r.basis}`);
+    assert.ok(['own', 'same-id', 'label', 'bilingual', 'legal', 'descriptor', 'bank', 'library'].includes(r.basis), `${id}: ${r.basis}`);
     files.add(r.file.split('/').pop());
   }
   assert.deepEqual(readdirSync(join(ROOT, 'assets/brand-logos')).sort(), [...files].sort(), 'no file in assets/brand-logos without a chain');
   assert.equal(logos.meta.withLogo, Object.keys(logos.logos).length);
   assert.equal(logos.meta.brands, brands.size);
   assert.equal(logos.meta.withLogo + logos.meta.without.length, brands.size);
+  // 0.5.1: chains the family pool leaves without a logo take the Pharmacy logo library's file (its web manifest's SHA-256).
+  const fromLibrary = Object.values(logos.logos).filter(r => r.basis === 'library');
+  assert.equal(logos.meta.library?.used ?? 0, fromLibrary.length);
+  if (fromLibrary.length) assert.match(logos.meta.library.manifestSha256, /^[a-f0-9]{64}$/);
+  assert.ok(!/drive\.google|docs\.google|googleusercontent/.test(JSON.stringify(logos)), 'no private Drive links');
   // The four chains the Beauty master registered under the same PHB ids (Shopping Center ships their verified files).
   for (const name of ['Watsons', 'Boots', 'matsukiyo', 'LAB Pharmacy']) {
     assert.ok(Object.values(logos.logos).some(r => r.name === name), `${name} has no logo`);

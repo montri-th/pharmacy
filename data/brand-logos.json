@@ -5,7 +5,7 @@
   "checkedOn": "2026-11-24",
   "dataset": "research.TH.pharmacy",
   "brands": 32,
-  "withLogo": 4,
+  "withLogo": 31,
   "rule": "D64 of CityMETER · Shopping Center (owner 2026-11-24): own id → the same id in another dataset → a name a research sheet confirmed → one fixed rewrite; two different files give none",
   "rights": "เครื่องหมายเป็นของเจ้าของแต่ละราย การแสดงเพื่อระบุเครือร้านไม่ใช่ใบอนุญาตเครื่องหมายการค้า",
   "pool": {
@@ -14,7 +14,7 @@
     "files": 563
    },
    "fitness": {
-    "commit": "e82a7dff859c4b87fa8825b331c7a41cee9ec5e7",
+    "commit": "281ef22499a93e2cca9a916b2bf9ee4ed4614fee",
     "files": 126
    },
    "hotel": {
@@ -26,7 +26,7 @@
     "files": 43
    },
    "luxurybrands": {
-    "commit": "1496b942e8453c6de44019591672bcf8890dcb92",
+    "commit": "22052c8623c3786fef3f63af25bd8d915b8a0a69",
     "files": 168
    },
    "grocery": {
@@ -38,149 +38,22 @@
     "files": 15
    },
    "shoppingcenter": {
-    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
-    "files": 307
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "files": 456
    }
+  },
+  "library": {
+   "title": "CityMETER Pharmacy logo library web manifest",
+   "checkedOn": "2026-11-09",
+   "manifestSha256": "d1c471759cba36a318517a114f13157338f6b3a038c6be23e12b390b114614e3",
+   "mappings": 32,
+   "usable": 31,
+   "used": 14
   },
   "without": [
    {
-    "id": "PHB-e8286fd77afce184",
-    "name": "Pharmax",
-    "reason": "none"
-   },
-   {
     "id": "PHB-b96442c37e0896c5",
     "name": "Tsuruha",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-ac31213dd24c42a7",
-    "name": "Bangkok Drugstore",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-d6979f07865e1c96",
-    "name": "Fascino",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-c83d2ce2244abfaf",
-    "name": "SAVE DRUG",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-78b159320a932507",
-    "name": "PURE Pharmacy",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-c0af37b518215772",
-    "name": "eXta Plus",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-0a30c72aa718449b",
-    "name": "iCare",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-1c4d626fb85ea9de",
-    "name": "Super Drug",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-fad85555da579663",
-    "name": "P&F Smooth Life",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-9f59cec0385a313d",
-    "name": "Health Up",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-22cfb87acacb16ee",
-    "name": "Super Save",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-aaaef815aa7c4649",
-    "name": "D-Chain",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-0babdf230288f88a",
-    "name": "DPharmacy",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-13edc845f857aa64",
-    "name": "DR.Pharma",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-9199554cea23cb58",
-    "name": "Tops Care",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-1f64d2d9fc0f8640",
-    "name": "Ya Nueng",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-f2da76e4855989ea",
-    "name": "Pharma Choice",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-638d1bfd4b6439ae",
-    "name": "Morya Pharmacy",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-44e39c1dd483404f",
-    "name": "Sala Osot",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-91cf4075f35315b2",
-    "name": "Pharmaplex",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-0b95fc3c3593d71c",
-    "name": "Diamond Pharmacy",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-e1b16388de5bc943",
-    "name": "Siam Pharmacy BKK",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-6443f22d5852d528",
-    "name": "Health Plus",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-e97263c93c2d6bcf",
-    "name": "Pillar Pharmacy",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-d85764dba2ef8fb7",
-    "name": "GPO Pharma Shop",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-66d7d02edce360fb",
-    "name": "Osotsala",
-    "reason": "none"
-   },
-   {
-    "id": "PHB-de9276ff32327b02",
-    "name": "Siriraj B.R.V. pharmacy",
     "reason": "none"
    }
   ]
@@ -194,11 +67,131 @@
    "width": 500.0,
    "height": 250.0,
    "background": "#FFFFFF",
-   "basis": "same-id",
+   "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
     "path": "assets/tenant-logos/ec9a8e0cb4883ab32013.png"
+   }
+  },
+  "PHB-0a30c72aa718449b": {
+   "name": "iCare",
+   "file": "assets/brand-logos/79f3c3a7122948541fac.svg",
+   "sha256": "79f3c3a7122948541fac3cbbd7d44776f2e9e4b4bb9652059607ada12179ed94",
+   "mime": "image/svg+xml",
+   "width": 1089.0,
+   "height": 606.0,
+   "background": "#182327",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/79f3c3a7122948541fac.svg"
+   }
+  },
+  "PHB-0b95fc3c3593d71c": {
+   "name": "Diamond Pharmacy",
+   "file": "assets/brand-logos/50436ce84233a4541da3.png",
+   "sha256": "50436ce84233a4541da36ac2208e89ae641bfe02742087f418be0237bafe1d0a",
+   "mime": "image/png",
+   "width": 375,
+   "height": 100,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://diamondpharmacy-th.com/th/"
+   }
+  },
+  "PHB-0babdf230288f88a": {
+   "name": "DPharmacy",
+   "file": "assets/brand-logos/8f8f4c5150110c71810e.jpg",
+   "sha256": "8f8f4c5150110c71810ee120d191f12e7eaa7aeb9e04c3f542569c8fa20243b8",
+   "mime": "image/jpeg",
+   "width": 2048,
+   "height": 2048,
+   "background": "#FFFFFF",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.dpharmacy.co.th/"
+   }
+  },
+  "PHB-13edc845f857aa64": {
+   "name": "DR.Pharma",
+   "file": "assets/brand-logos/0ce2071c5575151878ad.png",
+   "sha256": "0ce2071c5575151878ad7aa46e32ba330428f6c23c3288e4f5224a2499325fbf",
+   "mime": "image/png",
+   "width": 180.0,
+   "height": 79.0,
+   "background": "#182327",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/0ce2071c5575151878ad.png"
+   }
+  },
+  "PHB-1c4d626fb85ea9de": {
+   "name": "Super Drug",
+   "file": "assets/brand-logos/8b473ec616dfbc0371a0.svg",
+   "sha256": "8b473ec616dfbc0371a039abd57e30bd943e31ea362fa9afebf08d52669cc592",
+   "mime": "image/svg+xml",
+   "width": 1140.0,
+   "height": 422.0,
+   "background": "#182327",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.healthleadgroup.com/th/about/business-overview/"
+   }
+  },
+  "PHB-1f64d2d9fc0f8640": {
+   "name": "Ya Nueng",
+   "file": "assets/brand-logos/b7acbfa46971eb541840.png",
+   "sha256": "b7acbfa46971eb541840c135c03e6ab846770b3d97101e3b0955fe1160228fac",
+   "mime": "image/png",
+   "width": 474,
+   "height": 300,
+   "background": "#182327",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://drugone.co.th/th"
+   }
+  },
+  "PHB-22cfb87acacb16ee": {
+   "name": "Super Save",
+   "file": "assets/brand-logos/7aa1a50d93cf66b9c58b.png",
+   "sha256": "7aa1a50d93cf66b9c58b2ece4f06ed4984448ec08397f9faeec81405e35faac3",
+   "mime": "image/png",
+   "width": 314.0,
+   "height": 314.0,
+   "background": "#FFFFFF",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/7aa1a50d93cf66b9c58b.png"
+   }
+  },
+  "PHB-44e39c1dd483404f": {
+   "name": "Sala Osot",
+   "file": "assets/brand-logos/f3613b63f8de93cec1d6.png",
+   "sha256": "f3613b63f8de93cec1d6a0c07086706e51e69889cc1ff2a634e0155474dc18ac",
+   "mime": "image/png",
+   "width": 5000,
+   "height": 1500,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.salaosot.com/aboutus-content.aspx"
    }
   },
   "PHB-538666734d03e796": {
@@ -212,8 +205,98 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
     "path": "assets/tenant-logos/62d5bfddb12c22211a06.png"
+   }
+  },
+  "PHB-638d1bfd4b6439ae": {
+   "name": "Morya Pharmacy",
+   "file": "assets/brand-logos/1633960c7a3a88be934c.jpg",
+   "sha256": "1633960c7a3a88be934ca1c426cabc782c08c74184e8adcb497d8551ce1183fd",
+   "mime": "image/jpeg",
+   "width": 491,
+   "height": 99,
+   "background": "#FFFFFF",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://moryapharmacy.co.th/index.php?id_cms=4&controller=cms"
+   }
+  },
+  "PHB-6443f22d5852d528": {
+   "name": "Health Plus",
+   "file": "assets/brand-logos/e3785243263cddf91495.jpg",
+   "sha256": "e3785243263cddf914956e843c8c571b08eb5b38519f7f87aa494ea582945890",
+   "mime": "image/jpeg",
+   "width": 200.0,
+   "height": 200.0,
+   "background": "#FFFFFF",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/e3785243263cddf91495.jpg"
+   }
+  },
+  "PHB-66d7d02edce360fb": {
+   "name": "Osotsala",
+   "file": "assets/brand-logos/eabe4d55cef01a34e817.jpg",
+   "sha256": "eabe4d55cef01a34e8177b3d056ffcf3e01d644285bdb298c960736f0b9a6004",
+   "mime": "image/jpeg",
+   "width": 200,
+   "height": 200,
+   "background": "#FFFFFF",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://page.line.me/osotsala"
+   }
+  },
+  "PHB-78b159320a932507": {
+   "name": "PURE Pharmacy",
+   "file": "assets/brand-logos/1ec891937cbb7c59ae8e.jpg",
+   "sha256": "1ec891937cbb7c59ae8e938cf7958532376fdfe45c82180e17b62089c7c1aadb",
+   "mime": "image/jpeg",
+   "width": 720.0,
+   "height": 720.0,
+   "background": "#FFFFFF",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/1ec891937cbb7c59ae8e.jpg"
+   }
+  },
+  "PHB-9199554cea23cb58": {
+   "name": "Tops Care",
+   "file": "assets/brand-logos/0f0555644a4edb38b09f.png",
+   "sha256": "0f0555644a4edb38b09f95a50bf28f4ea96659471d18abc5e5d593b5ff38aa1f",
+   "mime": "image/png",
+   "width": 800.0,
+   "height": 169.0,
+   "background": "#E5E9E6",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/0f0555644a4edb38b09f.png"
+   }
+  },
+  "PHB-91cf4075f35315b2": {
+   "name": "Pharmaplex",
+   "file": "assets/brand-logos/6f44b0e3806f74586c6d.jpg",
+   "sha256": "6f44b0e3806f74586c6db3f3ead6e570a40a873a060be790bec9d96d628a9703",
+   "mime": "image/jpeg",
+   "width": 200,
+   "height": 200,
+   "background": "#182327",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://page.line.me/qsd0274x"
    }
   },
   "PHB-929433e4be1dbd23": {
@@ -224,11 +307,71 @@
    "width": 305.0,
    "height": 165.0,
    "background": "#E5E9E6",
-   "basis": "same-id",
+   "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
     "path": "assets/tenant-logos/287a9650b56b68d1d91b.png"
+   }
+  },
+  "PHB-9f59cec0385a313d": {
+   "name": "Health Up",
+   "file": "assets/brand-logos/292b5bd7fd6d2952c788.png",
+   "sha256": "292b5bd7fd6d2952c788d1e3f141dbc84712f381a4c3795b7f85fe086a0ae0fa",
+   "mime": "image/png",
+   "width": 314.0,
+   "height": 314.0,
+   "background": "#FFFFFF",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/292b5bd7fd6d2952c788.png"
+   }
+  },
+  "PHB-aaaef815aa7c4649": {
+   "name": "D-Chain",
+   "file": "assets/brand-logos/999f5e1fadc19e6f3264.png",
+   "sha256": "999f5e1fadc19e6f3264fbea6851a874f7b1f1c1e6d6f030502d0b9b9c55e80e",
+   "mime": "image/png",
+   "width": 268,
+   "height": 98,
+   "background": "#182327",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://dchain.co.th/"
+   }
+  },
+  "PHB-ac31213dd24c42a7": {
+   "name": "Bangkok Drugstore",
+   "file": "assets/brand-logos/80ed877ff629539f1c2e.svg",
+   "sha256": "80ed877ff629539f1c2eb25e7f50da50ba38d0a6c191c56061f8621329684c4b",
+   "mime": "image/svg+xml",
+   "width": 483.26,
+   "height": 254.52,
+   "background": "#182327",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/80ed877ff629539f1c2e.svg"
+   }
+  },
+  "PHB-c0af37b518215772": {
+   "name": "eXta Plus",
+   "file": "assets/brand-logos/acc00e79c66e53f41443.png",
+   "sha256": "acc00e79c66e53f41443b46f6127fc869871693db9c089055ffba2e167b4a38e",
+   "mime": "image/png",
+   "width": 84.0,
+   "height": 84.0,
+   "background": "#E5E9E6",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/acc00e79c66e53f41443.png"
    }
   },
   "PHB-c616dca117a04077": {
@@ -239,11 +382,146 @@
    "width": 102.0,
    "height": 102.0,
    "background": "#E5E9E6",
-   "basis": "same-id",
+   "basis": "own",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
     "path": "assets/tenant-logos/0785222596af06dd9b7d.png"
+   }
+  },
+  "PHB-c83d2ce2244abfaf": {
+   "name": "SAVE DRUG",
+   "file": "assets/brand-logos/48e39ce5da133ad399b9.jpg",
+   "sha256": "48e39ce5da133ad399b9e0848008d4e529274d88bafe2ba3d6db2df9ee114e40",
+   "mime": "image/jpeg",
+   "width": 197.0,
+   "height": 53.0,
+   "background": "#FFFFFF",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/48e39ce5da133ad399b9.jpg"
+   }
+  },
+  "PHB-d6979f07865e1c96": {
+   "name": "Fascino",
+   "file": "assets/brand-logos/86fcaacb78096394fa64.png",
+   "sha256": "86fcaacb78096394fa649511abc7dc64e7894397fd9f57619db1804501e6c648",
+   "mime": "image/png",
+   "width": 360.0,
+   "height": 120.0,
+   "background": "#E5E9E6",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/86fcaacb78096394fa64.png"
+   }
+  },
+  "PHB-d85764dba2ef8fb7": {
+   "name": "GPO Pharma Shop",
+   "file": "assets/brand-logos/c7f92ce707efc1aed1f4.jpg",
+   "sha256": "c7f92ce707efc1aed1f4f7e2604561b261b2f5e10c7b39ed8000b290305b2cff",
+   "mime": "image/jpeg",
+   "width": 200,
+   "height": 200,
+   "background": "#FFFFFF",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://page.line.me/360hmomd"
+   }
+  },
+  "PHB-de9276ff32327b02": {
+   "name": "Siriraj B.R.V. pharmacy",
+   "file": "assets/brand-logos/62c269c74f1ae9df29ed.svg",
+   "sha256": "62c269c74f1ae9df29ed2d22218191d87eeca5889c7d078b23bc391c86ff3c59",
+   "mime": "image/svg+xml",
+   "width": 55.0,
+   "height": 72.0,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.sirirajbrv.com/about-us"
+   }
+  },
+  "PHB-e1b16388de5bc943": {
+   "name": "Siam Pharmacy BKK",
+   "file": "assets/brand-logos/680ff20c104550b3ec22.jpg",
+   "sha256": "680ff20c104550b3ec22c02fae77cfbee4909b9f98f80853df1a7e099df78645",
+   "mime": "image/jpeg",
+   "width": 200,
+   "height": 200,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://page.line.me/710dtmgd"
+   }
+  },
+  "PHB-e8286fd77afce184": {
+   "name": "Pharmax",
+   "file": "assets/brand-logos/d8758aceaf1d10e3046c.svg",
+   "sha256": "d8758aceaf1d10e3046c43a5d719de49a9c05328fc88ef3141aa7e5963367bef",
+   "mime": "image/svg+xml",
+   "width": 1807.0,
+   "height": 530.0,
+   "background": "#182327",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/d8758aceaf1d10e3046c.svg"
+   }
+  },
+  "PHB-e97263c93c2d6bcf": {
+   "name": "Pillar Pharmacy",
+   "file": "assets/brand-logos/bc256a17caa6af033679.png",
+   "sha256": "bc256a17caa6af033679607b5aa2bd1a2791ecc38d0cbfa38a6f93307cd8f56a",
+   "mime": "image/png",
+   "width": 600,
+   "height": 600,
+   "background": "#FFFFFF",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.facebook.com/pillarpharmacy999"
+   }
+  },
+  "PHB-f2da76e4855989ea": {
+   "name": "Pharma Choice",
+   "file": "assets/brand-logos/f2ffd317eeb0b730da67.png",
+   "sha256": "f2ffd317eeb0b730da670e4958eb31a2e92f10e08f532d2f17c8f3cf829bde6d",
+   "mime": "image/png",
+   "width": 332,
+   "height": 70,
+   "background": "#E5E9E6",
+   "basis": "library",
+   "source": {
+    "library": "CityMETER Pharmacy logo library web manifest",
+    "checkedOn": "2026-11-09",
+    "sourcePage": "https://www.pharmachoice.co.th/departments/"
+   }
+  },
+  "PHB-fad85555da579663": {
+   "name": "P&F Smooth Life",
+   "file": "assets/brand-logos/c5d8824e7ffca293a6a6.jpg",
+   "sha256": "c5d8824e7ffca293a6a6d308fdc4b0cea7f2e8d270baba759d1b911bde410949",
+   "mime": "image/jpeg",
+   "width": 200.0,
+   "height": 200.0,
+   "background": "#E5E9E6",
+   "basis": "own",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "fa973d1c4dc52ae1b904b51c52ff898240f28cb2",
+    "path": "assets/tenant-logos/c5d8824e7ffca293a6a6.jpg"
    }
   }
  }
