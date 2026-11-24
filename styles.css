@@ -514,3 +514,10 @@ td small { display: block; color: var(--text-metadata); font-size: 12px; margin-
 .map-panel:not(.has-open-building) .legend-building-item { display: none; }
 .legend-building { width: 12px; height: 12px; background: var(--map-active-layer); border: 1px solid var(--map-selected-stroke); transform: skewY(-12deg); }
 .legend-marks #legend-pin .cue-shape { width: 11px; height: 11px; }
+
+/* D64 (owner 2026-11-24): chain logos the CityMETER family already verified (js/brand-logos.js). A plate beside the name,
+   which stays the identity; the plate is the same on both themes and the artwork is never recoloured. */
+.brand-logo { display: inline-flex; align-items: center; justify-content: center; flex: none; box-sizing: border-box; border: 1px solid var(--border-hairline); border-radius: 4px; background: var(--brand-logo-bg, var(--surface-soft)); overflow: hidden; }
+.brand-logo img { display: block; box-sizing: border-box; width: 100%; height: 100%; padding: 2px; object-fit: contain; }
+.brand-logo-chip { width: 40px; height: 22px; }
+.brand-logo-store { display: flex; width: 72px; height: 36px; margin: 2px 0 6px; }

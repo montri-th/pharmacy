@@ -51,6 +51,7 @@ import {installProvinceLayers, buildProvinceModel, PROVINCE_FILL_MAX_ZOOM, PROVI
 import {createFrameStore, provinceLocator} from './frames.js';
 import {buildOverview, buildAreaProfile, buildDistrictProfile, buildStoreDetail, buildBuildingProfile, listOrder} from './profile-model.js';
 import {renderOverview, renderArea, renderDistrict, renderBuilding, renderStore, renderFilterChips, esc, num, dens} from './panel.js';
+import {setBrandLogos} from './brand-logos.js';
 import {joinRows, containsPoint} from './building-join.js';
 import {buildMapStyle, basemapPalette, TILEJSON_URL, MASSING_BEFORE} from './map-style.js';
 import {installMassing, outerRings} from './massing.js';
@@ -1264,6 +1265,7 @@ const PARTIAL = {
   'data/provinces.geojson': ['กรอบจังหวัด', 'แผนที่ไม่แสดงขอบจังหวัด', 'Province outlines', 'The map shows no province outlines'],
   'frames': ['เส้นขอบเขต/อำเภอ', 'บางจังหวัดไม่แสดงเส้นขอบเขต/อำเภอบนแผนที่', 'District outlines', 'Some provinces show no district outlines on the map'],
   'basemap': ['แผนที่ฐาน', 'ถนน แหล่งน้ำ และอาคารพื้นหลังอาจไม่แสดง ข้อมูลในแผงและตารางยังใช้ได้', 'Basemap', 'Roads, water and background buildings may be missing; the panel and the table still work'],
+  'data/brand-logos.json': ['โลโก้เครือร้าน', 'เครือร้านแสดงชื่ออย่างเดียว ไม่มีโลโก้', 'Chain logos', 'Chains are shown by name only, without logos'],
 };
 function partial(key) {
   const words = PARTIAL[key];
@@ -1291,6 +1293,9 @@ async function init() {
     state.frames = createFrameStore({index: state.index, fetchJSON, version: RELEASE, onLoad: onFramesLoaded,
       onError: (code, e) => { partial('frames'); console.warn('Province outlines unavailable', code, e); $('map-status').dataset.framesError = code; }});
 
+    // D64 (owner 2026-11-24): chain logos the CityMETER family already verified — optional, drawn once they arrive.
+    fetchJSON('data/brand-logos.json', {timeout: 30000}).then(json => { if (setBrandLogos(json) && state.rows?.length) renderPanel(); })
+      .catch(e => { partial('data/brand-logos.json'); console.warn('Chain logos unavailable', e); });
     refreshOptionCounts();
     restoreFromURL();
     refreshOptionCounts();
