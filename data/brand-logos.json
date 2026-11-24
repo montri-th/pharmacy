@@ -1,7 +1,7 @@
 {
  "meta": {
   "schemaVersion": "1",
-  "kit": "citymeter-logos 1.0.0",
+  "kit": "citymeter-logos 1.1.0",
   "checkedOn": "2026-11-24",
   "dataset": "research.TH.pharmacy",
   "brands": 32,
@@ -38,7 +38,7 @@
     "files": 15
    },
    "shoppingcenter": {
-    "commit": "3c3299b49ac8541f1ff74c606a17a291c4536b65",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
     "files": 307
    }
   },
@@ -197,7 +197,7 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "3c3299b49ac8541f1ff74c606a17a291c4536b65",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
     "path": "assets/tenant-logos/ec9a8e0cb4883ab32013.png"
    }
   },
@@ -212,7 +212,7 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "3c3299b49ac8541f1ff74c606a17a291c4536b65",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
     "path": "assets/tenant-logos/62d5bfddb12c22211a06.png"
    }
   },
@@ -227,7 +227,7 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "3c3299b49ac8541f1ff74c606a17a291c4536b65",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
     "path": "assets/tenant-logos/287a9650b56b68d1d91b.png"
    }
   },
@@ -242,7 +242,7 @@
    "basis": "same-id",
    "source": {
     "repo": "montri-th/shoppingcenter",
-    "commit": "3c3299b49ac8541f1ff74c606a17a291c4536b65",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
     "path": "assets/tenant-logos/0785222596af06dd9b7d.png"
    }
   }

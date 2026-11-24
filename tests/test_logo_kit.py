@@ -84,5 +84,36 @@ class Plates(unittest.TestCase):
         self.assertEqual(kit.dimensions(svg_black, 'image/svg+xml'), (10.0, 10.0))
 
 
+
+class Venues(unittest.TestCase):
+    """VenuePool (1.1.0): a venue takes another demo's logo only by its venue id, one artwork with one role."""
+
+    @staticmethod
+    def pool(links):
+        vp = kit.VenuePool()
+        for repo, venue, digest, original, role in links:
+            vp.sources.setdefault(repo, {'files': 0, 'links': 0, 'issues': 0})
+            vp.files.setdefault(digest, {'sha256': digest, 'repo': repo, 'original': original})
+            vp.link(repo, venue, digest, role)
+        return vp
+
+    def test_one_artwork_one_role(self):
+        o, d = 'a' * 64, 'b' * 64     # d: a downscale whose record keeps the original's SHA-256
+        vp = self.pool([('fitness', 'SC-1', d, o, 'venue_specific'), ('camera', 'SC-1', o, o, 'venue_specific'),
+                        ('camera', 'SC-2', o, o, 'venue_specific'), ('luxurybrands', 'SC-2', 'c' * 64, 'c' * 64, 'venue_specific'),
+                        ('camera', 'SC-3', o, o, 'venue_specific'), ('fitness', 'SC-3', d, o, 'shared_chain_banner'),
+                        ('shoppingcenter', 'SC-4', o, o, 'venue_specific')])
+        hit, why = vp.resolve('SC-1')
+        self.assertEqual((hit['sha256'], why), (o, 'same-id'), 'the original bytes win over a downscale of them')
+        self.assertEqual(vp.resolve('SC-2'), (None, 'ambiguous'), 'two artworks for one venue give none')
+        self.assertEqual(vp.resolve('SC-3'), (None, 'role-conflict'), 'one artwork with two roles gives none')
+        self.assertEqual(vp.resolve('SC-4', exclude=('shoppingcenter',)), (None, 'none'), 'a demo never takes its own links back')
+        self.assertEqual(vp.resolve('Central Ladprao'), (None, 'none'), 'never by name')
+        vp.link('camera', 'SC-5', o, 'logo')
+        self.assertEqual(vp.resolve('SC-5'), (None, 'none'), 'a role outside the four is no link')
+        self.assertEqual(vp.by_sha(o.upper())['sha256'], o)
+        self.assertIsNone(vp.by_sha('e' * 64))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

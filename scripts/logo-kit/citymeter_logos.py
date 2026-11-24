@@ -32,6 +32,16 @@ Never: fuzzy or partial matching, a name to a file that another entity of the sa
 `suppressManufacturerLogo` (a retailer that sells a brand is not the brand), or a logo that changes a name, a count or an
 identity. A logo identifies a name on screen; collecting a file is not a trademark licence.
 
+Venue (mall) logos — since 1.1.0. The same fragmentation hid mall logos: Camera Shops shipped the logos of Seacon Square,
+Future Park and some 30 Robinson Lifestyle and Lotus's branches, which Shopping Center itself did not show, and Luxury Brands
+left 17 files “pending transfer” whose exact bytes other demos already shipped. VenuePool reads every venue-logo registry of
+the family (each file checked against its record) and links a logo to a venue only by the venue id CityMETER · Shopping
+Center gives it (SC-…, VN-…): Shopping Center's own registry, a Camera or Luxury Brands centre's externalId, a Fitness
+venue's scId. resolve(id): the files of that id from the other demos must be one artwork (Fitness ships uniform downscales
+and keeps the original's SHA-256, which counts as the same artwork) with one role (venue_specific · parent_complex ·
+shared_department_store_banner · shared_chain_banner), else none; the original bytes win over a downscale. by_sha(digest):
+the family's copy of a file a registry already names by its SHA-256. Never by name or distance.
+
     python3 -I scripts/logo-kit/citymeter_logos.py pool --family <dir holding the demo checkouts> --out <pool.json>
 """
 import argparse
@@ -45,7 +55,7 @@ import subprocess
 import unicodedata
 
 KIT = 'citymeter-logos'
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 # Source order when one entity id has several files (step 2) — the demo whose research master owns the brand first.
 POOL_ORDER = ('restaurant', 'fitness', 'hotel', 'camera', 'luxurybrands', 'grocery', 'university', 'shoppingcenter')
@@ -495,6 +505,96 @@ def build_pool(root, skip=()):
         if repo in skip or not os.path.isdir(os.path.join(root, repo)):
             continue
         adapter(pool, root)
+    return pool
+
+
+# ── Venue (mall) logos, kit 1.1.0 ─────────────────────────────────────────────────────────────────────────────────────
+VENUE_ORDER = ('shoppingcenter', 'camera', 'luxurybrands', 'fitness', 'grocery', 'restaurant')
+VENUE_ROLES = ('venue_specific', 'parent_complex', 'shared_department_store_banner', 'shared_chain_banner')
+
+
+class VenuePool:
+    """Mall logos of the family: files by SHA-256, links by the Shopping Center venue id."""
+
+    def __init__(self):
+        self.files, self.by_id, self.issues, self.sources = {}, collections.defaultdict(list), [], {}
+
+    def add_file(self, repo, root, rec, original=None):
+        path = rec.get('file') or ''
+        full = os.path.join(root, repo, path)
+        src = self.sources.setdefault(repo, {'commit': git_head(os.path.join(root, repo)), 'files': 0, 'links': 0, 'issues': 0})
+        if not path or not os.path.isfile(full):
+            self.issues.append({'repo': repo, 'path': path, 'reason': 'missing'}); src['issues'] += 1
+            return None
+        digest = sha256_file(full)
+        if rec.get('sha256') and rec['sha256'].lower() != digest:
+            self.issues.append({'repo': repo, 'path': path, 'reason': 'sha256 mismatch'}); src['issues'] += 1
+            return None
+        if digest not in self.files:
+            raw = open(full, 'rb').read()
+            mime = rec.get('mime') or guess_mime(full, raw)
+            w, h = rec.get('width'), rec.get('height')
+            if not (w and h):
+                w, h = dimensions(raw, mime)
+            plate = rec.get('background') if rec.get('background') in LDS_PLATES else plate_for(raw, mime)
+            self.files[digest] = {'sha256': digest, 'repo': repo, 'path': path, 'mime': mime, 'bytes': len(raw), 'width': w,
+                                  'height': h, 'background': plate, 'original': (original or digest).lower(),
+                                  'sourcePage': rec.get('sourcePage') or ''}
+            src['files'] += 1
+        return digest
+
+    def link(self, repo, venue_id, digest, role):
+        if venue_id and digest and role in VENUE_ROLES:
+            self.by_id[venue_id].append({'sha256': digest, 'original': self.files[digest]['original'], 'role': role, 'repo': repo})
+            self.sources[repo]['links'] += 1
+
+    def resolve(self, venue_id, exclude=()):
+        found = [x for x in self.by_id.get(venue_id, []) if x['repo'] not in exclude]
+        if not found:
+            return None, 'none'
+        if len({x['original'] for x in found}) > 1:
+            return None, 'ambiguous'
+        if len({x['role'] for x in found}) > 1:
+            return None, 'role-conflict'
+        found.sort(key=lambda x: (x['sha256'] != x['original'], VENUE_ORDER.index(x['repo']) if x['repo'] in VENUE_ORDER else 99))
+        return found[0], 'same-id'
+
+    def by_sha(self, digest):
+        return self.files.get((digest or '').lower())
+
+    def summary(self):
+        return {'kit': f'{KIT} {VERSION}', 'files': len(self.files), 'venues': len(self.by_id), 'sources': self.sources, 'issues': self.issues}
+
+
+def _venue_centres(pool, root, repo, data_path):
+    """Camera Shops and Luxury Brands: centre uuid → logo key in venue-logos.json, uuid → externalId in the dataset."""
+    reg, data = _json(root, repo, 'data/venue-logos.json'), _json(root, repo, data_path)
+    if not reg:
+        return
+    keys = {a['key']: pool.add_file(repo, root, a) for a in reg.get('assets', [])}
+    external = {c['id']: c.get('externalId') for c in (data or {}).get('centers', [])}
+    for c in reg.get('centers', []):
+        pool.link(repo, external.get(c['id']), keys.get(c.get('key')), c.get('role') or 'venue_specific')
+
+
+def build_venue_pool(root):
+    pool = VenuePool()
+    reg = _json(root, 'shoppingcenter', 'data/venue-logos.json')
+    if reg:
+        keys = {a['key']: pool.add_file('shoppingcenter', root, a) for a in reg.get('assets', [])}
+        for v in reg.get('venues', []):
+            pool.link('shoppingcenter', v.get('id'), keys.get(v.get('key')), v.get('role') or 'venue_specific')
+    _venue_centres(pool, root, 'camera', 'data/camera.json')
+    _venue_centres(pool, root, 'luxurybrands', 'data/luxury.json')
+    reg, data = _json(root, 'fitness', 'data/venue-logos.json'), _json(root, 'fitness', 'data/fitness.json')
+    if reg:
+        keys = {a['key']: pool.add_file('fitness', root, a, original=(a.get('original') or {}).get('sha256')) for a in reg.get('logos', [])}
+        roles = {a['key']: a.get('role') or 'venue_specific' for a in reg.get('logos', [])}
+        for v in (data or {}).get('venues', []):
+            pool.link('fitness', v.get('scId'), keys.get(v.get('logo')), roles.get(v.get('logo')))
+    for repo in ('grocery', 'restaurant'):      # files only (their venue ids are their own): exact-SHA-256 lookups
+        for a in (_json(root, repo, 'data/venue-logos.json') or {}).get('assets', []):
+            pool.add_file(repo, root, a)
     return pool
 
 
