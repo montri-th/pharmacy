@@ -109,3 +109,9 @@ Chrome ของเจ้าของ แผนที่ฐานและมว
 ## 12. รุ่น 0.5.2 — Tsuruha ตามข้อยกเว้นของเจ้าของ (`20261124-r3`) — local
 
 - ไฟล์ Tsuruha ดาวน์โหลดผ่าน Google Drive connector ตรง SHA-256 ของ manifest ของคลัง · `attach-family-logos.py` (ศูนย์การค้าที่ `bb07800`): 32 จาก 32 เครือมีโลโก้ (own 16 · library 15 · same-id 1) · Tsuruha อ่านได้บนพื้นสว่าง
+
+## 13. รุ่น 0.5.2 — live (24 พ.ย. 2569)
+
+- merge PR #20 → `80e91a0` (พร้อม Shopping Center PR #46 → `ce8ecb6`) · deploy run 45370853586 ล้มที่ขั้นดึง snapshot (GitHub Pages ของ governmentoffice ตอบ HTTP 503 ชั่วคราว) · dispatch ซ้ำ run 45371005759: 114/114 live checks · pharmacy key OK
+- `npm run handoff:manifest` (243 ไฟล์) · `npm run verify:live`: 212 ok · `data/frames/CTI.json` ได้ 503 ชั่วคราว ดึงซ้ำได้ 200 ไบต์ตรง
+- citymeter.pages.dev ในเบราว์เซอร์ในแอป Claude: แท็ก `20261124-r3` · ชิปเครือร้าน 12 ชิปบนหน้าแรกมีโลโก้และโหลดครบ 12 จาก 12 เมื่อเลื่อนมาในจอ (โหลดแบบ lazy) · ชิป Tsuruha: `assets/brand-logos/4f9bb92db0f867f4dee0.svg` ตอบ 200, 11,679 ไบต์, SHA-256 ขึ้นต้น `4f9bb92db0f867f4` ตรงชื่อไฟล์ · พื้นรองสว่าง อ่านได้ในภาพหน้าจอ
