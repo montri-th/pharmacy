@@ -86,3 +86,11 @@ Chrome ของเจ้าของ แผนที่ฐานและมว
 - ชุดกลางในรุ่นนี้คือ citymeter-logos 1.1.0 (ไบต์เดียวกับ CityMETER · Shopping Center 0.9.8; 1.1.0 เพิ่ม `VenuePool` สำหรับโลโก้ศูนย์ กฎแบรนด์เหมือน 1.0.0) · `data/brand-logos.json` สร้างใหม่ด้วย 1.1.0 ได้ 4 เครือเดิม ไฟล์เดิม ต่างแค่ `meta.kit` และ commit ต้นทาง (Shopping Center `d10ca3e` บน main)
 - บล็อก `data/brand-logos.json` (Headless Chrome 1,440 px): ประกาศ “ข้อมูลไม่ครบ — โลโก้เครือร้าน: เครือร้านแสดงชื่ออย่างเดียว ไม่มีโลโก้” ชิปเครือร้านแสดงชื่อ 12 ชิป ไม่มีโลโก้ หน้าอื่นทำงานตามเดิม
 - Headless Chrome บนเซิร์ฟเวอร์ในเครื่อง (แผนที่ฐานถูก proxy ของตู้ทำงานกั้น ตรวจเฉพาะแผง): กรุงเทพฯ 1,440 px ธีมสว่าง — ชิป “เครือร้านที่พบมากที่สุด” แสดงโลโก้ Boots และ Watsons ข้างชื่อ เครืออื่นแสดงชื่ออย่างเดียว · ภาษาอังกฤษ 390 px ธีมมืด `__citymeterI18n.missing` ว่าง · แผงร้าน (render ใน node จากข้อมูลจริง): Watsons และ Boots มีโลโก้เหนือชื่อเครือ Fascino แสดงชื่ออย่างเดียว
+
+## 9. รุ่น 0.5.0 — live (24 พ.ย. 2569)
+
+- เจ้าของอนุมัติ merge และ publish ในแชต 24 พ.ย. 2569 (“Merge, publish และทำต่อ (Recommended)”) · PR #16 merged `28460ab`
+- GitHub Pages: `index.html` ใช้แท็ก `20261124-r1` · `npm run handoff:manifest` (215 ไฟล์, commit `28460ab`) · `npm run verify:live` 185 ok · 0 failed
+- citymeter.pages.dev: montri-th/citymeter-pages-deploy run 45318129145 สำเร็จ “114 / 114 live checks passed”
+- Headless Chrome บน GitHub Pages 1,440 px (แผนที่ฐานถูก proxy ของตู้ทำงานกั้น): ชิปเครือร้านของกรุงเทพฯ แสดงโลโก้ Boots (`287a9650b56b68d1d91b.png`) และ Watsons (`ec9a8e0cb4883ab32013.png`) · `__citymeterI18n.missing` 0
+- ยังไม่ได้ตรวจด้วยตาใน Chrome ของเจ้าของบน citymeter.pages.dev: ส่วนขยาย Claude in Chrome ไม่ได้เชื่อมต่อระหว่างตรวจ
