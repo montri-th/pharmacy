@@ -100,3 +100,8 @@ Chrome ของเจ้าของ แผนที่ฐานและมว
 - manifest ของคลังโลโก้ Pharmacy (ตรวจ 9 พ.ย. 2569, 32 แถว) · ดาวน์โหลด 27 ไฟล์ brand_primary ที่ยังไม่มีผ่าน Google Drive connector ตรง SHA-256 ของ manifest ทุกไฟล์
 - `python3 -I scripts/attach-family-logos.py --family /home/claude --checked-on 2026-11-24 --library … --files …` (ศูนย์การค้าที่ `fa973d1`): 31 จาก 32 เครือมีโลโก้ (own 16 · library 14 · same-id 1) · Tsuruha ไม่มี (ป้ายเครือร่วม)
 - contact sheet 31 โลโก้บนพื้นมืด: อ่านได้บนพื้นรองทุกเครือ
+
+## 11. รุ่น 0.5.1 — live (24 พ.ย. 2569)
+
+- merge PR #18 → `c8b6bf3` · deploy run 45352962191: 114/114 live checks · pharmacy key OK · `npm run verify:live`: 212 ok · 0 ไม่ตรง
+- citymeter.pages.dev ในเบราว์เซอร์ในแอป Claude: แท็ก `20261124-r2` · ชิปเครือร้าน 12 ชิปบนหน้าแรก 11 ชิปมีโลโก้และโหลดครบ · ชิปที่ไม่มีโลโก้คือ Tsuruha (ป้ายเครือร่วม)
