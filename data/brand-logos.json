@@ -1,0 +1,250 @@
+{
+ "meta": {
+  "schemaVersion": "1",
+  "kit": "citymeter-logos 1.1.0",
+  "checkedOn": "2026-11-24",
+  "dataset": "research.TH.pharmacy",
+  "brands": 32,
+  "withLogo": 4,
+  "rule": "D64 of CityMETER · Shopping Center (owner 2026-11-24): own id → the same id in another dataset → a name a research sheet confirmed → one fixed rewrite; two different files give none",
+  "rights": "เครื่องหมายเป็นของเจ้าของแต่ละราย การแสดงเพื่อระบุเครือร้านไม่ใช่ใบอนุญาตเครื่องหมายการค้า",
+  "pool": {
+   "restaurant": {
+    "commit": "8ed9b4b5cb1854ce943130c6232489cab393a22e",
+    "files": 563
+   },
+   "fitness": {
+    "commit": "e82a7dff859c4b87fa8825b331c7a41cee9ec5e7",
+    "files": 126
+   },
+   "hotel": {
+    "commit": "77343704a8861f453a5e1cd9b5eae81d16f4d734",
+    "files": 107
+   },
+   "camera": {
+    "commit": "f38d405386415795144b3214b97be1a0e1432ca3",
+    "files": 43
+   },
+   "luxurybrands": {
+    "commit": "1496b942e8453c6de44019591672bcf8890dcb92",
+    "files": 168
+   },
+   "grocery": {
+    "commit": "549be8969a89335ef8b769ef28aa124099fd5fdb",
+    "files": 18
+   },
+   "university": {
+    "commit": "d429c52bc2e93dc37d8d9d0063866ab0476f12ad",
+    "files": 15
+   },
+   "shoppingcenter": {
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "files": 307
+   }
+  },
+  "without": [
+   {
+    "id": "PHB-e8286fd77afce184",
+    "name": "Pharmax",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-b96442c37e0896c5",
+    "name": "Tsuruha",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-ac31213dd24c42a7",
+    "name": "Bangkok Drugstore",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-d6979f07865e1c96",
+    "name": "Fascino",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-c83d2ce2244abfaf",
+    "name": "SAVE DRUG",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-78b159320a932507",
+    "name": "PURE Pharmacy",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-c0af37b518215772",
+    "name": "eXta Plus",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-0a30c72aa718449b",
+    "name": "iCare",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-1c4d626fb85ea9de",
+    "name": "Super Drug",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-fad85555da579663",
+    "name": "P&F Smooth Life",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-9f59cec0385a313d",
+    "name": "Health Up",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-22cfb87acacb16ee",
+    "name": "Super Save",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-aaaef815aa7c4649",
+    "name": "D-Chain",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-0babdf230288f88a",
+    "name": "DPharmacy",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-13edc845f857aa64",
+    "name": "DR.Pharma",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-9199554cea23cb58",
+    "name": "Tops Care",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-1f64d2d9fc0f8640",
+    "name": "Ya Nueng",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-f2da76e4855989ea",
+    "name": "Pharma Choice",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-638d1bfd4b6439ae",
+    "name": "Morya Pharmacy",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-44e39c1dd483404f",
+    "name": "Sala Osot",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-91cf4075f35315b2",
+    "name": "Pharmaplex",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-0b95fc3c3593d71c",
+    "name": "Diamond Pharmacy",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-e1b16388de5bc943",
+    "name": "Siam Pharmacy BKK",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-6443f22d5852d528",
+    "name": "Health Plus",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-e97263c93c2d6bcf",
+    "name": "Pillar Pharmacy",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-d85764dba2ef8fb7",
+    "name": "GPO Pharma Shop",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-66d7d02edce360fb",
+    "name": "Osotsala",
+    "reason": "none"
+   },
+   {
+    "id": "PHB-de9276ff32327b02",
+    "name": "Siriraj B.R.V. pharmacy",
+    "reason": "none"
+   }
+  ]
+ },
+ "logos": {
+  "PHB-094826b42cd5691a": {
+   "name": "Watsons",
+   "file": "assets/brand-logos/ec9a8e0cb4883ab32013.png",
+   "sha256": "ec9a8e0cb4883ab32013c6e1842a6fdc7df448e6527e42132391f65a97cbd719",
+   "mime": "image/png",
+   "width": 500.0,
+   "height": 250.0,
+   "background": "#FFFFFF",
+   "basis": "same-id",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "path": "assets/tenant-logos/ec9a8e0cb4883ab32013.png"
+   }
+  },
+  "PHB-538666734d03e796": {
+   "name": "matsukiyo",
+   "file": "assets/brand-logos/62d5bfddb12c22211a06.png",
+   "sha256": "62d5bfddb12c22211a06a2d3ec734570f9e54baba3ca33c2bf2ed6ddb20234af",
+   "mime": "image/png",
+   "width": 919.0,
+   "height": 281.0,
+   "background": "#E5E9E6",
+   "basis": "same-id",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "path": "assets/tenant-logos/62d5bfddb12c22211a06.png"
+   }
+  },
+  "PHB-929433e4be1dbd23": {
+   "name": "Boots",
+   "file": "assets/brand-logos/287a9650b56b68d1d91b.png",
+   "sha256": "287a9650b56b68d1d91b8afd150781def46043574e6dd3eec0d5042d93e8561b",
+   "mime": "image/png",
+   "width": 305.0,
+   "height": 165.0,
+   "background": "#E5E9E6",
+   "basis": "same-id",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "path": "assets/tenant-logos/287a9650b56b68d1d91b.png"
+   }
+  },
+  "PHB-c616dca117a04077": {
+   "name": "LAB Pharmacy",
+   "file": "assets/brand-logos/0785222596af06dd9b7d.png",
+   "sha256": "0785222596af06dd9b7d08838ca721eddd6b7c358055be2555caedb42d1758e3",
+   "mime": "image/png",
+   "width": 102.0,
+   "height": 102.0,
+   "background": "#E5E9E6",
+   "basis": "same-id",
+   "source": {
+    "repo": "montri-th/shoppingcenter",
+    "commit": "d10ca3e7cf59a81497a37999bd7ceda4bff7ccfb",
+    "path": "assets/tenant-logos/0785222596af06dd9b7d.png"
+   }
+  }
+ }
+}

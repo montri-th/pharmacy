@@ -16,6 +16,7 @@ import {productionLink, provinceByCode, hasPoint, EVIDENCE_LABEL, EVIDENCE_SHORT
 import {areaWord, districtWord} from './areas.js';
 import {buildCountClasses, classify as classifyValue} from './scales.js';
 import {cueMarkup, QUALITY_SERIES, seriesOf} from './cues.js';
+import {brandLogoMarkup} from './brand-logos.js';
 import {LANG} from './shell/i18n.js';
 
 const NUMBER = new Intl.NumberFormat('th-TH', {maximumFractionDigits: 0});
@@ -116,7 +117,7 @@ function pharmacyList(rows, opts = {}) {
 
 function chainChips(chains, unit) {
   if (!chains.length) return '<p class="hint">ไม่พบเครือร้านที่ยืนยันแล้วในพื้นที่นี้</p>';
-  return `<ul class="chip-list">${chains.map(c => `<li><button type="button" class="brand-chip" data-action="filter-brand" data-value="${esc(c.brand.id)}" title="${esc(c.brand.name)} — ${num(c.count)} ${esc(unit.one)} (ดูเฉพาะเครือนี้)">${cueMarkup(seriesOf(c.brand.group), {className: 'chip-cue'})}<span>${esc(c.brand.name)}</span><small class="data-number">${num(c.count)}</small></button></li>`).join('')}</ul>`;
+  return `<ul class="chip-list">${chains.map(c => `<li><button type="button" class="brand-chip" data-action="filter-brand" data-value="${esc(c.brand.id)}" title="${esc(c.brand.name)} — ${num(c.count)} ${esc(unit.one)} (ดูเฉพาะเครือนี้)">${cueMarkup(seriesOf(c.brand.group), {className: 'chip-cue'})}${brandLogoMarkup(c.brand.id)}<span>${esc(c.brand.name)}</span><small class="data-number">${num(c.count)}</small></button></li>`).join('')}</ul>`;
 }
 
 /**
@@ -338,7 +339,7 @@ export function renderStore(d, ctx = {}) {
   const unit = ctx.unit, r = d.row, w = d.words;
   const fda = sourceOf(ctx, 'FDA_KHY1'), acc = sourceOf(ctx, 'ACC_PHARM_QUALITY');
   const coords = hasPoint(r) ? `${r.latitude.toFixed(6)}, ${r.longitude.toFixed(6)}` : '';
-  const brand = r.brand ? `<dt>เครือร้าน</dt><dd><button type="button" class="link-button" data-action="filter-brand" data-value="${esc(r.brand.id)}">${esc(r.brand.name)}</button><br><span class="hint">${esc(BRAND_NOTE[r.brandStatus] || 'จับคู่จากชื่อร้าน')}</span></dd>`
+  const brand = r.brand ? `<dt>เครือร้าน</dt><dd>${brandLogoMarkup(r.brand.id, {size: 'store'})}<button type="button" class="link-button" data-action="filter-brand" data-value="${esc(r.brand.id)}">${esc(r.brand.name)}</button><br><span class="hint">${esc(BRAND_NOTE[r.brandStatus] || 'จับคู่จากชื่อร้าน')}</span></dd>`
     : r.candidate ? `<dt>เครือร้าน</dt><dd>ยังไม่ยืนยัน<br><span class="hint">ชื่อคล้าย ${esc(r.candidate.name)} — แหล่งข้อมูลยังยืนยันไม่ได้ว่าเป็นสาขา จึงไม่นับรวมกับเครือ</span></dd>` : '';
   const licence = r.licence
     ? `<span class="data-number">${esc(r.licence)}</span><br><span class="hint">ทะเบียน ขย1 อย. ข้อมูล ณ ${esc(thaiDate(fda.asOf))} · สถานะตามที่เผยแพร่ “คงอยู่” · หมดอายุปี พ.ศ. 2569 (แหล่งให้เฉพาะปี)</span>`

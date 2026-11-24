@@ -1,0 +1,10 @@
+{
+  "name": "citymeter-logos",
+  "version": "1.1.0",
+  "released": "2026-11-24",
+  "about": "One logo pool and one resolver for every CityMETER demo (owner 2026-11-24: “หาวิธีแก้ที่แก้ได้ทุกที่เหมือนกัน”). The pool is every logo file a demo of the family already ships, each checked against the SHA-256 of the record that shipped it (sprite symbols only when their embedded original equals sourceSHA256). The resolver: own id → the same id in another dataset → a name the research sheets confirmed → one fixed rewrite (bilingual pair, legal suffix, store or food word, bank word); two different files give none; a retailer marked suppressManufacturerLogo never takes the brand logo. Since 1.1.0 VenuePool does the same for venue (mall) logos: the venue-logo registries of Shopping Center, Camera Shops, Luxury Brands and Fitness, linked only by the venue id CityMETER · Shopping Center gives a venue (a centre externalId, a venue scId); one artwork with one role across the other demos, else none; the original bytes over a downscale; by_sha() finds the copy the family ships of a file a registry already names by its SHA-256. Same bytes in every repository that carries the kit; change them everywhere at once and rebuild this file.",
+  "files": {
+    "scripts/logo-kit/citymeter_logos.py": "e9ad8ed51f0ea7ddd1e4f546c5b7bcf8e5b6e01d8807301fc7f2dd1afd2d2f2d",
+    "tests/test_logo_kit.py": "f90eee0bc1550bb4e84a40461936891f0979b80bd191bb7a928f5d3d7abac0d9"
+  }
+}

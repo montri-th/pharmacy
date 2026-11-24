@@ -12,7 +12,7 @@
  * From DETAIL_MIN_ZOOM the focus rows inside the viewport (≤ MAX_DETAIL_PINS, nearest the centre first)
  * become HTML buttons: keyboard-reachable (roving tabindex, arrow keys), co-located rows get bounded
  * screen-space slots around their own anchor (the source point never moves; a leader line joins a
- * hovered/selected pin to it). No logos: the research round did not collect chain logos.
+ * hovered/selected pin to it). No logos on pins: chain logos (js/brand-logos.js, release 0.5.0) sit in the panel beside the chain name.
  */
 import {hasPoint} from './model.js';
 import {cueImage, cueMarkup} from './cues.js';
